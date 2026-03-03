@@ -3,11 +3,7 @@ export const metadata = {
   description: "Design, test, and deploy Claude Code Agent Skills",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>{children}</body>

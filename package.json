@@ -1,17 +1,22 @@
 {
   "name": "uberskillsz",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
-    "lint": "turbo run lint",
+    "lint": "biome check .",
+    "lint:fix": "biome check --fix .",
+    "format": "biome format --write .",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "format": "turbo run format",
     "db:migrate": "turbo run db:migrate"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.5",
     "turbo": "^2",
     "typescript": "^5.7"
   },
