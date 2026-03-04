@@ -34,6 +34,7 @@ import { StatusBadge } from "@/components/status-badge";
 import { FilesTab } from "./files-tab";
 import { InstructionsTab } from "./instructions-tab";
 import { MetadataTab } from "./metadata-tab";
+import { PreviewTab } from "./preview-tab";
 
 /** Skill data serialised for client consumption (Date fields as ISO strings). */
 export interface EditorSkillData {
@@ -338,10 +339,7 @@ export function EditorShell({ skill, files }: EditorShellProps) {
         </TabsContent>
 
         <TabsContent value="preview" className="mt-6">
-          <TabPlaceholder
-            title="Preview"
-            description="See the generated SKILL.md as it will be exported."
-          />
+          <PreviewTab skill={skill} files={files} />
         </TabsContent>
 
         <TabsContent value="history" className="mt-6">

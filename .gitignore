@@ -32,3 +32,4 @@ coverage/
 # Playwright
 playwright-report/
 test-results/
+tsconfig.tsbuildinfo
