@@ -3,6 +3,16 @@
 import type { SkillStatus } from "@uberskillz/types";
 import {
   Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
   Select,
   SelectContent,
   SelectItem,
@@ -23,12 +33,14 @@ import {
   FileText,
   History,
   Loader2,
+  MoreVertical,
   Pencil,
   Play,
   RefreshCw,
   Rocket,
   Save,
   Settings2,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -338,6 +350,27 @@ export function EditorShell({ skill, files }: EditorShellProps) {
     }
   }, [skill.id, router]);
 
+  // ------- Delete skill -------
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDeleteConfirm = useCallback(async () => {
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/skills/${skill.id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const data = (await res.json()) as { error?: string };
+        throw new Error(data.error ?? `Request failed (${res.status})`);
+      }
+      toast.success(`Deleted "${skill.name}"`);
+      router.push("/skills");
+    } catch (err) {
+      toast.error(toErrorMessage(err, "Failed to delete skill"));
+    } finally {
+      setDeleting(false);
+    }
+  }, [skill.id, skill.name, router]);
+
   return (
     <div className="space-y-6">
       <Button variant="ghost" size="sm" asChild className="-ml-2">
@@ -428,6 +461,20 @@ export function EditorShell({ skill, files }: EditorShellProps) {
             <Rocket className="size-4" />
             Deploy
           </Button>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" aria-label="More actions">
+                <MoreVertical className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem variant="destructive" onClick={() => setShowDeleteDialog(true)}>
+                <Trash2 className="size-4" />
+                Delete Skill
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -485,6 +532,32 @@ export function EditorShell({ skill, files }: EditorShellProps) {
           <HistoryTab skillId={skill.id} />
         </TabsContent>
       </Tabs>
+
+      {/* Delete confirmation dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={(open) => !open && setShowDeleteDialog(false)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete {workingName}?</DialogTitle>
+            <DialogDescription>
+              This will permanently delete this skill and all its versions, files, and test runs.
+              This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowDeleteDialog(false)}
+              disabled={deleting}
+            >
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteConfirm} disabled={deleting}>
+              {deleting && <Loader2 className="size-4 animate-spin" />}
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
