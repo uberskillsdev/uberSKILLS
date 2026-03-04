@@ -9,6 +9,11 @@ export default mergeConfig(rootConfig, {
     },
   },
   test: {
-    include: ["app/**/*.test.ts", "hooks/**/*.test.ts"],
+    include: [
+      "app/**/*.test.ts",
+      "hooks/**/*.test.ts",
+      "components/**/*.test.ts",
+      "components/**/*.test.tsx",
+    ],
   },
 });

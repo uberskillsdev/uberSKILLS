@@ -44,6 +44,7 @@ export {
 } from "./components/dropdown-menu";
 export { Input } from "./components/input";
 export { Label } from "./components/label";
+export { Popover, PopoverAnchor, PopoverContent, PopoverTrigger } from "./components/popover";
 export {
   Select,
   SelectContent,
