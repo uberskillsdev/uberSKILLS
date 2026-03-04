@@ -1,3 +1,4 @@
+import type { SkillSortKey } from "@uberskillz/db";
 import { listSkills } from "@uberskillz/db";
 import type { SkillStatus } from "@uberskillz/types";
 import { Button } from "@uberskillz/ui";
@@ -13,14 +14,16 @@ import { SkillsLibraryView } from "@/components/skills-library-view";
 export const dynamic = "force-dynamic";
 
 const VALID_STATUSES = new Set<SkillStatus>(["draft", "ready", "deployed"]);
+const VALID_SORTS = new Set<SkillSortKey>(["updated", "name_asc", "name_desc", "newest", "oldest"]);
+const PAGE_SIZE = 12;
 
 interface SkillsPageProps {
-  searchParams: Promise<{ q?: string; status?: string }>;
+  searchParams: Promise<{ q?: string; status?: string; sort?: string; page?: string }>;
 }
 
 /**
  * Skills Library page -- browsable, searchable grid/list of all skills.
- * Reads `q` and `status` from URL search params to filter results.
+ * Reads `q`, `status`, `sort`, and `page` from URL search params.
  * View mode (grid/list) is managed client-side via SkillsLibraryView.
  */
 export default async function SkillsLibraryPage({ searchParams }: SkillsPageProps) {
@@ -31,8 +34,14 @@ export default async function SkillsLibraryPage({ searchParams }: SkillsPageProp
     params.status && VALID_STATUSES.has(params.status as SkillStatus)
       ? (params.status as SkillStatus)
       : undefined;
+  const sort =
+    params.sort && VALID_SORTS.has(params.sort as SkillSortKey)
+      ? (params.sort as SkillSortKey)
+      : undefined;
+  const page = Math.max(1, Number(params.page) || 1);
 
-  const { data: skills, total } = listSkills({ search, status, limit: 12 });
+  const result = listSkills({ search, status, sort, page, limit: PAGE_SIZE });
+  const { data: skills, total, totalPages } = result;
   const hasFilters = !!search || !!status;
 
   return (
@@ -49,9 +58,15 @@ export default async function SkillsLibraryPage({ searchParams }: SkillsPageProp
         }
       />
 
-      {/* Controls toolbar (search, filter, view toggle) + skills grid/list */}
+      {/* Controls toolbar (search, filter, view toggle) + skills grid/list + pagination */}
       <Suspense>
-        <SkillsLibraryView skills={skills} />
+        <SkillsLibraryView
+          skills={skills}
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          limit={PAGE_SIZE}
+        />
       </Suspense>
 
       {hasFilters && skills.length > 0 && (
