@@ -1,36 +1,20 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
-import { useCallback, useMemo, useRef, useState } from "react";
-import { toast } from "sonner";
+import { useCallback, useMemo, useRef } from "react";
 
 import type { EditorSkillData } from "./editor-shell";
 
 interface InstructionsTabProps {
   skill: EditorSkillData;
-  onSaved?: () => void;
+  /** Called on every content change. The parent (editor-shell) updates its working copy
+   *  and the auto-save hook takes care of persisting the change after a debounce. */
+  onContentChange: (content: string) => void;
 }
 
 const TAB_SIZE = 2;
 const TAB_STRING = " ".repeat(TAB_SIZE);
 
-/** Calls PUT /api/skills/:id and throws on failure. */
-async function updateSkillApi(skillId: string, payload: Record<string, unknown>): Promise<void> {
-  const res = await fetch(`/api/skills/${skillId}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-
-  if (!res.ok) {
-    const data = (await res.json()) as { error?: string };
-    throw new Error(data.error ?? `Request failed (${res.status})`);
-  }
-}
-
-export function InstructionsTab({ skill, onSaved }: InstructionsTabProps) {
-  const [content, setContent] = useState(skill.content);
-  const [saving, setSaving] = useState(false);
+export function InstructionsTab({ skill, onContentChange }: InstructionsTabProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const gutterRef = useRef<HTMLDivElement>(null);
 
@@ -41,10 +25,10 @@ export function InstructionsTab({ skill, onSaved }: InstructionsTabProps) {
   }, []);
 
   const stats = useMemo(() => {
-    const lines = content.split("\n");
-    const words = content.trim() ? content.trim().split(/\s+/).length : 0;
-    return { lineCount: lines.length, wordCount: words, charCount: content.length };
-  }, [content]);
+    const lines = skill.content.split("\n");
+    const words = skill.content.trim() ? skill.content.trim().split(/\s+/).length : 0;
+    return { lineCount: lines.length, wordCount: words, charCount: skill.content.length };
+  }, [skill.content]);
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -55,46 +39,34 @@ export function InstructionsTab({ skill, onSaved }: InstructionsTabProps) {
       if (!textarea) return;
 
       const { selectionStart, selectionEnd } = textarea;
+      const content = skill.content;
 
       if (e.shiftKey) {
+        // Shift+Tab: remove indentation
         const beforeCursor = content.slice(0, selectionStart);
         const lineStart = beforeCursor.lastIndexOf("\n") + 1;
         const linePrefix = content.slice(lineStart, selectionStart);
 
         if (linePrefix.startsWith(TAB_STRING)) {
           const updated = content.slice(0, lineStart) + content.slice(lineStart + TAB_SIZE);
-          setContent(updated);
+          onContentChange(updated);
           requestAnimationFrame(() => {
             textarea.selectionStart = Math.max(lineStart, selectionStart - TAB_SIZE);
             textarea.selectionEnd = Math.max(lineStart, selectionEnd - TAB_SIZE);
           });
         }
       } else {
+        // Tab: insert indentation
         const updated = content.slice(0, selectionStart) + TAB_STRING + content.slice(selectionEnd);
-        setContent(updated);
+        onContentChange(updated);
         requestAnimationFrame(() => {
           textarea.selectionStart = selectionStart + TAB_SIZE;
           textarea.selectionEnd = selectionStart + TAB_SIZE;
         });
       }
     },
-    [content],
+    [skill.content, onContentChange],
   );
-
-  const save = useCallback(async () => {
-    if (content === skill.content) return;
-
-    setSaving(true);
-    try {
-      await updateSkillApi(skill.id, { content });
-      onSaved?.();
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to save instructions";
-      toast.error(message);
-    } finally {
-      setSaving(false);
-    }
-  }, [content, skill.content, skill.id, onSaved]);
 
   return (
     <div className="space-y-3">
@@ -116,11 +88,10 @@ export function InstructionsTab({ skill, onSaved }: InstructionsTabProps) {
 
         <textarea
           ref={textareaRef}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
+          value={skill.content}
+          onChange={(e) => onContentChange(e.target.value)}
           onScroll={handleScroll}
           onKeyDown={handleKeyDown}
-          onBlur={save}
           placeholder="Write your skill instructions in Markdown..."
           spellCheck={false}
           aria-label="Skill instructions editor"
@@ -135,12 +106,6 @@ export function InstructionsTab({ skill, onSaved }: InstructionsTabProps) {
           <span>{stats.wordCount} words</span>
           <span>{stats.lineCount} lines</span>
         </div>
-        {saving && (
-          <div className="flex items-center gap-1.5">
-            <Loader2 className="size-3 animate-spin" />
-            Saving...
-          </div>
-        )}
       </div>
     </div>
   );

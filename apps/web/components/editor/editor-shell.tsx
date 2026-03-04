@@ -15,22 +15,27 @@ import {
   TabsTrigger,
 } from "@uberskillz/ui";
 import {
+  AlertCircle,
   ArrowLeft,
+  Check,
   Download,
   FileText,
   History,
   Loader2,
   Pencil,
   Play,
+  RefreshCw,
   Rocket,
+  Save,
   Settings2,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { StatusBadge } from "@/components/status-badge";
+import { type SkillSnapshot, useAutoSave } from "@/hooks/use-auto-save";
 import { FilesTab } from "./files-tab";
 import { HistoryTab } from "./history-tab";
 import { InstructionsTab } from "./instructions-tab";
@@ -124,13 +129,89 @@ export function EditorShell({ skill, files }: EditorShellProps) {
     tabParam && VALID_TAB_VALUES.has(tabParam) ? (tabParam as TabValue) : "metadata";
 
   const [activeTab, setActiveTab] = useState<TabValue>(initialTab);
-  const [skillName, setSkillName] = useState(skill.name);
   const [status, setStatus] = useState<SkillStatus>(skill.status);
   const [isEditingName, setIsEditingName] = useState(false);
   const [savingName, setSavingName] = useState(false);
   const [savingStatus, setSavingStatus] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
+  // ------- Mutable working copy of the skill's auto-saveable fields -------
+  const [workingName, setWorkingName] = useState(skill.name);
+  const [workingDescription, setWorkingDescription] = useState(skill.description);
+  const [workingTrigger, setWorkingTrigger] = useState(skill.trigger);
+  const [workingTags, setWorkingTags] = useState<string[]>(skill.tags);
+  const [workingModelPattern, setWorkingModelPattern] = useState<string | null>(skill.modelPattern);
+  const [workingContent, setWorkingContent] = useState(skill.content);
+
+  // Snapshot of the current working copy for auto-save comparison
+  const currentSnapshot: SkillSnapshot = useMemo(
+    () => ({
+      name: workingName,
+      description: workingDescription,
+      trigger: workingTrigger,
+      tags: workingTags,
+      modelPattern: workingModelPattern,
+      content: workingContent,
+    }),
+    [
+      workingName,
+      workingDescription,
+      workingTrigger,
+      workingTags,
+      workingModelPattern,
+      workingContent,
+    ],
+  );
+
+  // Snapshot of the last-persisted state from the server
+  const savedSnapshot: SkillSnapshot = useMemo(
+    () => ({
+      name: skill.name,
+      description: skill.description,
+      trigger: skill.trigger,
+      tags: skill.tags,
+      modelPattern: skill.modelPattern,
+      content: skill.content,
+    }),
+    [skill.name, skill.description, skill.trigger, skill.tags, skill.modelPattern, skill.content],
+  );
+
+  const {
+    status: saveStatus,
+    saveNow,
+    isDirty,
+  } = useAutoSave({
+    skillId: skill.id,
+    current: currentSnapshot,
+    saved: savedSnapshot,
+    onSaved: () => router.refresh(),
+  });
+
+  // Build a composite EditorSkillData from the working copy for child components
+  const workingSkill: EditorSkillData = useMemo(
+    () => ({
+      ...skill,
+      name: workingName,
+      description: workingDescription,
+      trigger: workingTrigger,
+      tags: workingTags,
+      modelPattern: workingModelPattern,
+      content: workingContent,
+      status,
+    }),
+    [
+      skill,
+      workingName,
+      workingDescription,
+      workingTrigger,
+      workingTags,
+      workingModelPattern,
+      workingContent,
+      status,
+    ],
+  );
+
+  // ------- Tab navigation -------
   const handleTabChange = useCallback(
     (value: string) => {
       const tab = value as TabValue;
@@ -148,11 +229,12 @@ export function EditorShell({ skill, files }: EditorShellProps) {
     [router, searchParams, skill.id],
   );
 
+  // ------- Inline name editing (separate from auto-save — has its own UX) -------
   const saveSkillName = useCallback(async () => {
-    const trimmed = skillName.trim();
+    const trimmed = workingName.trim();
 
     if (!trimmed || trimmed === skill.name) {
-      setSkillName(skill.name);
+      setWorkingName(skill.name);
       setIsEditingName(false);
       return;
     }
@@ -164,12 +246,12 @@ export function EditorShell({ skill, files }: EditorShellProps) {
       router.refresh();
     } catch (err) {
       toast.error(toErrorMessage(err, "Failed to rename skill"));
-      setSkillName(skill.name);
+      setWorkingName(skill.name);
     } finally {
       setSavingName(false);
       setIsEditingName(false);
     }
-  }, [skillName, skill.name, skill.id, router]);
+  }, [workingName, skill.name, skill.id, router]);
 
   const handleNameKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -177,7 +259,7 @@ export function EditorShell({ skill, files }: EditorShellProps) {
         e.preventDefault();
         saveSkillName();
       } else if (e.key === "Escape") {
-        setSkillName(skill.name);
+        setWorkingName(skill.name);
         setIsEditingName(false);
       }
     },
@@ -189,6 +271,7 @@ export function EditorShell({ skill, files }: EditorShellProps) {
     requestAnimationFrame(() => nameInputRef.current?.select());
   }, []);
 
+  // ------- Status change (separate from auto-save) -------
   const handleStatusChange = useCallback(
     async (value: string) => {
       const newStatus = value as SkillStatus;
@@ -210,6 +293,7 @@ export function EditorShell({ skill, files }: EditorShellProps) {
     [status, skill.id],
   );
 
+  // ------- Export / Deploy -------
   const handleExport = useCallback(async () => {
     try {
       const res = await apiFetch("/api/export", "POST", { skillId: skill.id });
@@ -253,8 +337,8 @@ export function EditorShell({ skill, files }: EditorShellProps) {
               <input
                 ref={nameInputRef}
                 type="text"
-                value={skillName}
-                onChange={(e) => setSkillName(e.target.value)}
+                value={workingName}
+                onChange={(e) => setWorkingName(e.target.value)}
                 onBlur={saveSkillName}
                 onKeyDown={handleNameKeyDown}
                 className="h-9 rounded-md border border-input bg-background px-3 text-page-title tracking-tight focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -268,9 +352,9 @@ export function EditorShell({ skill, files }: EditorShellProps) {
               type="button"
               onClick={startEditingName}
               className="group flex items-center gap-2 text-page-title tracking-tight hover:text-muted-foreground transition-colors"
-              aria-label={`Edit skill name: ${skillName}`}
+              aria-label={`Edit skill name: ${workingName}`}
             >
-              <h1>{skillName}</h1>
+              <h1>{workingName}</h1>
               <Pencil className="size-4 opacity-0 group-hover:opacity-100 transition-opacity" />
             </button>
           )}
@@ -298,6 +382,15 @@ export function EditorShell({ skill, files }: EditorShellProps) {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* Auto-save status indicator */}
+          <SaveStatusIndicator status={saveStatus} isDirty={isDirty} onRetry={saveNow} />
+
+          {/* Manual save button */}
+          <Button variant="outline" size="sm" onClick={saveNow} disabled={!isDirty}>
+            <Save className="size-4" />
+            Save
+          </Button>
+
           <Button variant="outline" size="sm" asChild>
             <Link href={`/skills/${skill.id}/test`}>
               <Play className="size-4" />
@@ -328,11 +421,32 @@ export function EditorShell({ skill, files }: EditorShellProps) {
         </TabsList>
 
         <TabsContent value="metadata" className="mt-6">
-          <MetadataTab skill={skill} onSaved={() => router.refresh()} />
+          <MetadataTab
+            skill={workingSkill}
+            onFieldChange={(field, value) => {
+              switch (field) {
+                case "name":
+                  setWorkingName(value as string);
+                  break;
+                case "description":
+                  setWorkingDescription(value as string);
+                  break;
+                case "trigger":
+                  setWorkingTrigger(value as string);
+                  break;
+                case "tags":
+                  setWorkingTags(value as string[]);
+                  break;
+                case "modelPattern":
+                  setWorkingModelPattern(value as string | null);
+                  break;
+              }
+            }}
+          />
         </TabsContent>
 
         <TabsContent value="instructions" className="mt-6">
-          <InstructionsTab skill={skill} onSaved={() => router.refresh()} />
+          <InstructionsTab skill={workingSkill} onContentChange={setWorkingContent} />
         </TabsContent>
 
         <TabsContent value="files" className="mt-6">
@@ -340,7 +454,7 @@ export function EditorShell({ skill, files }: EditorShellProps) {
         </TabsContent>
 
         <TabsContent value="preview" className="mt-6">
-          <PreviewTab skill={skill} files={files} />
+          <PreviewTab skill={workingSkill} files={files} />
         </TabsContent>
 
         <TabsContent value="history" className="mt-6">
@@ -349,4 +463,72 @@ export function EditorShell({ skill, files }: EditorShellProps) {
       </Tabs>
     </div>
   );
+}
+
+// ---------------------------------------------------------------------------
+// Save status indicator component
+// ---------------------------------------------------------------------------
+
+import type { SaveStatus } from "@/hooks/use-auto-save";
+
+interface SaveStatusIndicatorProps {
+  status: SaveStatus;
+  isDirty: boolean;
+  onRetry: () => void;
+}
+
+function SaveStatusIndicator({ status, isDirty, onRetry }: SaveStatusIndicatorProps) {
+  switch (status) {
+    case "saving":
+      return (
+        <span
+          className="flex items-center gap-1.5 text-xs text-muted-foreground"
+          aria-live="polite"
+        >
+          <Loader2 className="size-3.5 animate-spin" />
+          Saving…
+        </span>
+      );
+    case "saved":
+      return (
+        <span
+          className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-400"
+          aria-live="polite"
+        >
+          <Check className="size-3.5" />
+          Saved
+        </span>
+      );
+    case "error":
+      return (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="flex items-center gap-1.5 text-xs text-destructive hover:underline"
+          aria-live="assertive"
+        >
+          <AlertCircle className="size-3.5" />
+          Error saving — retry
+        </button>
+      );
+    case "conflict":
+      return (
+        <button
+          type="button"
+          onClick={() => window.location.reload()}
+          className="flex items-center gap-1.5 text-xs text-destructive hover:underline"
+          aria-live="assertive"
+        >
+          <RefreshCw className="size-3.5" />
+          Conflict — reload
+        </button>
+      );
+    default:
+      // "idle" — show nothing unless there are unsaved changes
+      return isDirty ? (
+        <span className="text-xs text-muted-foreground" aria-live="polite">
+          Unsaved changes
+        </span>
+      ) : null;
+  }
 }

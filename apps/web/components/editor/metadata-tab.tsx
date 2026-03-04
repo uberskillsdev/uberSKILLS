@@ -3,14 +3,18 @@
 import { Input, Label, Textarea } from "@uberskillz/ui";
 import { Loader2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { toast } from "sonner";
 
 import type { EditorSkillData } from "./editor-shell";
 import { TagInput } from "./tag-input";
 
+/** Fields that the metadata tab can change. */
+export type MetadataField = "name" | "description" | "trigger" | "tags" | "modelPattern";
+
 interface MetadataTabProps {
   skill: EditorSkillData;
-  onSaved?: () => void;
+  /** Called when a metadata field changes. The parent (editor-shell) updates its working copy
+   *  and the auto-save hook takes care of persisting the change after a debounce. */
+  onFieldChange: (field: MetadataField, value: string | string[] | null) => void;
 }
 
 interface FieldErrors {
@@ -51,43 +55,23 @@ function useDebouncedCallback<T extends (...args: never[]) => void>(
   ) as T;
 }
 
-/** Calls PUT /api/skills/:id and throws on failure. */
-async function updateSkillApi(skillId: string, payload: Record<string, unknown>): Promise<void> {
-  const res = await fetch(`/api/skills/${skillId}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
-
-  if (!res.ok) {
-    const data = (await res.json()) as { error?: string };
-    throw new Error(data.error ?? `Request failed (${res.status})`);
-  }
-}
-
-export function MetadataTab({ skill, onSaved }: MetadataTabProps) {
-  const [name, setName] = useState(skill.name);
+export function MetadataTab({ skill, onFieldChange }: MetadataTabProps) {
   const [slug, setSlug] = useState(skill.slug);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
-  const [description, setDescription] = useState(skill.description);
-  const [trigger, setTrigger] = useState(skill.trigger);
-  const [tags, setTags] = useState<string[]>(skill.tags);
-  const [modelPattern, setModelPattern] = useState(skill.modelPattern ?? "");
 
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [saving, setSaving] = useState(false);
   const [checkingSlug, setCheckingSlug] = useState(false);
 
   const slugCheckRef = useRef(0);
 
   const handleNameChange = useCallback(
     (value: string) => {
-      setName(value);
+      onFieldChange("name", value);
       if (!slugManuallyEdited) {
         setSlug(slugify(value));
       }
     },
-    [slugManuallyEdited],
+    [slugManuallyEdited, onFieldChange],
   );
 
   const handleSlugChange = useCallback((value: string) => {
@@ -134,75 +118,52 @@ export function MetadataTab({ skill, onSaved }: MetadataTabProps) {
     }
   }, [slug, checkSlugUniqueness]);
 
-  const validate = useCallback((): boolean => {
-    const next: FieldErrors = {};
-
-    if (!name.trim()) {
-      next.name = "Name is required";
-    } else if (name.length > 100) {
-      next.name = "Name must be at most 100 characters";
-    }
-
-    if (!trigger.trim()) {
-      next.trigger = "Trigger is required";
-    }
-
-    if (description.length > 500) {
-      next.description = "Description must be at most 500 characters";
-    }
-
-    if (modelPattern) {
-      try {
-        new RegExp(modelPattern);
-      } catch {
-        next.modelPattern = "Must be a valid regular expression";
-      }
-    }
-
-    if (errors.slug) {
-      next.slug = errors.slug;
-    }
-
-    setErrors(next);
-    return Object.keys(next).length === 0;
-  }, [name, trigger, description, modelPattern, errors.slug]);
-
-  const save = useCallback(async () => {
-    if (!validate()) return;
-
-    setSaving(true);
-    try {
-      await updateSkillApi(skill.id, {
-        name: name.trim(),
-        description,
-        trigger,
-        tags,
-        modelPattern: modelPattern || null,
+  // Inline validation on blur
+  const validateField = useCallback(
+    (field: string) => {
+      setErrors((prev) => {
+        const next = { ...prev };
+        switch (field) {
+          case "name":
+            if (!skill.name.trim()) {
+              next.name = "Name is required";
+            } else if (skill.name.length > 100) {
+              next.name = "Name must be at most 100 characters";
+            } else {
+              next.name = undefined;
+            }
+            break;
+          case "trigger":
+            if (!skill.trigger.trim()) {
+              next.trigger = "Trigger is required";
+            } else {
+              next.trigger = undefined;
+            }
+            break;
+          case "description":
+            if (skill.description.length > 500) {
+              next.description = "Description must be at most 500 characters";
+            } else {
+              next.description = undefined;
+            }
+            break;
+          case "modelPattern":
+            if (skill.modelPattern) {
+              try {
+                new RegExp(skill.modelPattern);
+                next.modelPattern = undefined;
+              } catch {
+                next.modelPattern = "Must be a valid regular expression";
+              }
+            } else {
+              next.modelPattern = undefined;
+            }
+            break;
+        }
+        return next;
       });
-      onSaved?.();
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to save metadata";
-      toast.error(message);
-    } finally {
-      setSaving(false);
-    }
-  }, [validate, skill.id, name, description, trigger, tags, modelPattern, onSaved]);
-
-  const handleTagsChange = useCallback(
-    async (newTags: string[]) => {
-      setTags(newTags);
-      setSaving(true);
-      try {
-        await updateSkillApi(skill.id, { tags: newTags });
-        onSaved?.();
-      } catch (err) {
-        const message = err instanceof Error ? err.message : "Failed to save tags";
-        toast.error(message);
-      } finally {
-        setSaving(false);
-      }
     },
-    [skill.id, onSaved],
+    [skill.name, skill.trigger, skill.description, skill.modelPattern],
   );
 
   return (
@@ -210,9 +171,9 @@ export function MetadataTab({ skill, onSaved }: MetadataTabProps) {
       <FormField label="Name" required htmlFor="metadata-name" error={errors.name}>
         <Input
           id="metadata-name"
-          value={name}
+          value={skill.name}
           onChange={(e) => handleNameChange(e.target.value)}
-          onBlur={save}
+          onBlur={() => validateField("name")}
           placeholder="e.g. PR Reviewer"
           maxLength={100}
           aria-invalid={!!errors.name}
@@ -231,7 +192,6 @@ export function MetadataTab({ skill, onSaved }: MetadataTabProps) {
             id="metadata-slug"
             value={slug}
             onChange={(e) => handleSlugChange(e.target.value)}
-            onBlur={save}
             placeholder="e.g. pr-reviewer"
             aria-invalid={!!errors.slug}
             aria-describedby={errors.slug ? "metadata-slug-error" : "metadata-slug-hint"}
@@ -245,23 +205,23 @@ export function MetadataTab({ skill, onSaved }: MetadataTabProps) {
       <FormField label="Description" htmlFor="metadata-description" error={errors.description}>
         <Textarea
           id="metadata-description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          onBlur={save}
+          value={skill.description}
+          onChange={(e) => onFieldChange("description", e.target.value)}
+          onBlur={() => validateField("description")}
           placeholder="A brief description of what this skill does"
           maxLength={500}
           aria-invalid={!!errors.description}
           aria-describedby={errors.description ? "metadata-description-error" : undefined}
         />
-        <p className="text-xs text-muted-foreground">{description.length}/500 characters</p>
+        <p className="text-xs text-muted-foreground">{skill.description.length}/500 characters</p>
       </FormField>
 
       <FormField label="Trigger" required htmlFor="metadata-trigger" error={errors.trigger}>
         <Textarea
           id="metadata-trigger"
-          value={trigger}
-          onChange={(e) => setTrigger(e.target.value)}
-          onBlur={save}
+          value={skill.trigger}
+          onChange={(e) => onFieldChange("trigger", e.target.value)}
+          onBlur={() => validateField("trigger")}
           placeholder="Describe when this skill should activate, e.g. 'When the user asks to review a pull request'"
           aria-invalid={!!errors.trigger}
           aria-describedby={errors.trigger ? "metadata-trigger-error" : undefined}
@@ -269,7 +229,11 @@ export function MetadataTab({ skill, onSaved }: MetadataTabProps) {
       </FormField>
 
       <FormField label="Tags" htmlFor="metadata-tags">
-        <TagInput id="metadata-tags" tags={tags} onChange={handleTagsChange} />
+        <TagInput
+          id="metadata-tags"
+          tags={skill.tags}
+          onChange={(newTags) => onFieldChange("tags", newTags)}
+        />
       </FormField>
 
       <FormField
@@ -280,9 +244,9 @@ export function MetadataTab({ skill, onSaved }: MetadataTabProps) {
       >
         <Input
           id="metadata-model-pattern"
-          value={modelPattern}
-          onChange={(e) => setModelPattern(e.target.value)}
-          onBlur={save}
+          value={skill.modelPattern ?? ""}
+          onChange={(e) => onFieldChange("modelPattern", e.target.value || null)}
+          onBlur={() => validateField("modelPattern")}
           placeholder="e.g. claude-.*"
           aria-invalid={!!errors.modelPattern}
           aria-describedby={
@@ -290,13 +254,6 @@ export function MetadataTab({ skill, onSaved }: MetadataTabProps) {
           }
         />
       </FormField>
-
-      {saving && (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Loader2 className="size-3 animate-spin" />
-          Saving…
-        </div>
-      )}
     </div>
   );
 }
