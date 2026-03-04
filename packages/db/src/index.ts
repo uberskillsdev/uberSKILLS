@@ -1,5 +1,14 @@
 export { getDb, resetDbForTesting } from "./client";
+export { decrypt, encrypt } from "./crypto";
 export { runMigrations } from "./migrate";
+export type { CreateFileInput, UpdateFileInput } from "./queries/files";
+export { createFile, deleteFile, listFiles, updateFile } from "./queries/files";
+export {
+  getAllSettings,
+  getDecryptedApiKey,
+  getSetting,
+  setSetting,
+} from "./queries/settings";
 export type {
   CreateSkillInput,
   ListSkillsOptions,
@@ -14,5 +23,9 @@ export {
   listSkills,
   updateSkill,
 } from "./queries/skills";
+export type { CreateTestRunInput, UpdateTestRunInput } from "./queries/test-runs";
+export { createTestRun, getTestRun, listTestRuns, updateTestRun } from "./queries/test-runs";
+export type { CreateVersionInput } from "./queries/versions";
+export { createVersion, getVersion, listVersions } from "./queries/versions";
 export { settings, skillFiles, skills, skillVersions, testRuns } from "./schema";
 export { seed } from "./seed";
