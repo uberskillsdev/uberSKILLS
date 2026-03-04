@@ -21,6 +21,14 @@ const STATUS_OPTIONS = [
   { value: "deployed", label: "Deployed" },
 ] as const;
 
+const SORT_OPTIONS = [
+  { value: "updated", label: "Recently Updated" },
+  { value: "name_asc", label: "Name A-Z" },
+  { value: "name_desc", label: "Name Z-A" },
+  { value: "newest", label: "Newest" },
+  { value: "oldest", label: "Oldest" },
+] as const;
+
 const DEBOUNCE_MS = 300;
 
 export type ViewMode = "grid" | "list";
@@ -53,6 +61,7 @@ export function SkillsLibraryControls({ viewMode, onViewModeChange }: SkillsLibr
 
   const currentQuery = searchParams.get("q") ?? "";
   const currentStatus = searchParams.get("status") ?? "all";
+  const currentSort = searchParams.get("sort") ?? "updated";
 
   const [inputValue, setInputValue] = useState(currentQuery);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -67,12 +76,25 @@ export function SkillsLibraryControls({ viewMode, onViewModeChange }: SkillsLibr
     return () => clearTimeout(debounceRef.current);
   }, []);
 
-  /** Replaces URL search params without a full page reload. */
+  /**
+   * Replaces URL search params without a full page reload.
+   * Resets `page` to 1 when any filter/sort changes (unless `page` itself is being set).
+   */
   const updateParams = useCallback(
     (updates: Record<string, string>) => {
       const params = new URLSearchParams(searchParams.toString());
+
+      // Reset to page 1 when filters or sort change (not when navigating pages)
+      if (!("page" in updates)) {
+        params.delete("page");
+      }
+
       for (const [key, value] of Object.entries(updates)) {
-        if (!value || value === "all") {
+        // Remove param if it's empty or matches the default value
+        const isDefault =
+          (key === "status" && value === "all") || (key === "sort" && value === "updated");
+
+        if (!value || isDefault) {
           params.delete(key);
         } else {
           params.set(key, value);
@@ -116,6 +138,19 @@ export function SkillsLibraryControls({ viewMode, onViewModeChange }: SkillsLibr
         </SelectTrigger>
         <SelectContent>
           {STATUS_OPTIONS.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Select value={currentSort} onValueChange={(value) => updateParams({ sort: value })}>
+        <SelectTrigger className="w-full sm:w-[180px]" aria-label="Sort by">
+          <SelectValue placeholder="Sort by" />
+        </SelectTrigger>
+        <SelectContent>
+          {SORT_OPTIONS.map((option) => (
             <SelectItem key={option.value} value={option.value}>
               {option.label}
             </SelectItem>

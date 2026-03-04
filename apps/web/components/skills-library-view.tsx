@@ -3,6 +3,7 @@
 import type { SkillStatus } from "@uberskillz/types";
 import { useCallback, useState } from "react";
 
+import { Pagination } from "@/components/pagination";
 import { SkillCard } from "@/components/skill-card";
 import { SkillListView } from "@/components/skill-list-view";
 import {
@@ -25,14 +26,28 @@ interface SkillData {
 
 interface SkillsLibraryViewProps {
   skills: SkillData[];
+  /** Current 1-based page number. */
+  page: number;
+  /** Total number of pages. */
+  totalPages: number;
+  /** Total number of skills across all pages. */
+  total: number;
+  /** Items per page. */
+  limit: number;
 }
 
 /**
  * Client wrapper that manages the grid/list view toggle state.
  * Reads initial preference from localStorage and persists changes.
- * Renders the SkillsLibraryControls toolbar and the appropriate view.
+ * Renders the controls toolbar, the appropriate view, and pagination.
  */
-export function SkillsLibraryView({ skills }: SkillsLibraryViewProps) {
+export function SkillsLibraryView({
+  skills,
+  page,
+  totalPages,
+  total,
+  limit,
+}: SkillsLibraryViewProps) {
   const [viewMode, setViewMode] = useState<ViewMode>(getStoredViewMode);
 
   const handleViewModeChange = useCallback((mode: ViewMode) => {
@@ -54,6 +69,8 @@ export function SkillsLibraryView({ skills }: SkillsLibraryViewProps) {
         ) : (
           <SkillListView skills={skills} />
         ))}
+
+      <Pagination page={page} totalPages={totalPages} total={total} limit={limit} />
     </>
   );
 }
