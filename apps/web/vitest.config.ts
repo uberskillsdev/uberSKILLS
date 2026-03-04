@@ -3,6 +3,6 @@ import rootConfig from "../../vitest.config";
 
 export default mergeConfig(rootConfig, {
   test: {
-    include: ["app/**/*.test.ts"],
+    include: ["app/**/*.test.ts", "hooks/**/*.test.ts"],
   },
 });

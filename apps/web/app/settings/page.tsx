@@ -43,17 +43,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/page-header";
+import type { Model } from "@/hooks/use-models";
+import { invalidateModelCache, useModels } from "@/hooks/use-models";
 
 type ConnectionStatus = "idle" | "testing" | "connected" | "error";
-
-/** Cached model list with expiry timestamp. */
-interface ModelCache {
-  models: { id: string; name: string }[];
-  expiresAt: number;
-}
-
-/** How long the model list stays cached on the client (5 minutes). */
-const MODEL_CACHE_TTL_MS = 5 * 60 * 1000;
 
 /**
  * Settings page -- API key management (S3-2), preferences and data management (S3-3).
@@ -76,10 +69,8 @@ export default function SettingsPage() {
   const [keyEdited, setKeyEdited] = useState(false);
   const savingRef = useRef(false);
 
-  // Model list state
-  const [models, setModels] = useState<{ id: string; name: string }[]>([]);
-  const [modelsLoading, setModelsLoading] = useState(false);
-  const modelCacheRef = useRef<ModelCache | null>(null);
+  // Model list via shared hook
+  const { models, isLoading: modelsLoading } = useModels();
 
   // Data management state
   const [exporting, setExporting] = useState(false);
@@ -110,40 +101,6 @@ export default function SettingsPage() {
     fetchSettings();
   }, []);
 
-  /** Fetches available models from OpenRouter, using a 5-minute client cache. */
-  const fetchModels = useCallback(async () => {
-    // Return cached if still valid
-    const cache = modelCacheRef.current;
-    if (cache && Date.now() < cache.expiresAt) {
-      setModels(cache.models);
-      return;
-    }
-
-    setModelsLoading(true);
-    try {
-      const res = await fetch("/api/models");
-      if (!res.ok) return;
-
-      const data = (await res.json()) as { models: { id: string; name: string }[] };
-      setModels(data.models);
-      modelCacheRef.current = {
-        models: data.models,
-        expiresAt: Date.now() + MODEL_CACHE_TTL_MS,
-      };
-    } catch {
-      // Silently fail -- model list is a nice-to-have
-    } finally {
-      setModelsLoading(false);
-    }
-  }, []);
-
-  // Fetch model list when settings load and API key exists
-  useEffect(() => {
-    if (settings?.openrouterApiKey) {
-      fetchModels();
-    }
-  }, [settings?.openrouterApiKey, fetchModels]);
-
   /** Saves the API key via PUT /api/settings. */
   const saveApiKey = useCallback(async () => {
     if (!keyEdited || savingRef.current) return;
@@ -168,8 +125,8 @@ export default function SettingsPage() {
       setApiKey(updated.openrouterApiKey ?? "");
       setShowKey(false);
       setConnectionStatus("idle");
-      // Invalidate model cache since key changed
-      modelCacheRef.current = null;
+      // Invalidate shared model cache since key changed
+      invalidateModelCache();
       toast.success("API key saved");
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to save API key";
@@ -239,9 +196,9 @@ export default function SettingsPage() {
       endpoint: string,
       fallbackFilename: string,
       successMessage: string,
-      setLoading: (v: boolean) => void,
+      setBusy: (v: boolean) => void,
     ) => {
-      setLoading(true);
+      setBusy(true);
       try {
         const res = await fetch(endpoint);
         if (!res.ok) {
@@ -259,7 +216,7 @@ export default function SettingsPage() {
         const message = err instanceof Error ? err.message : "Download failed";
         toast.error(message);
       } finally {
-        setLoading(false);
+        setBusy(false);
       }
     },
     [],
@@ -338,7 +295,7 @@ export default function SettingsPage() {
   // Event handlers for API key input
   const handleKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setApiKey(e.target.value);
-    if (!keyEdited) setKeyEdited(true);
+    setKeyEdited(true);
   };
 
   const handleKeyBlur = () => {
@@ -606,8 +563,13 @@ export default function SettingsPage() {
   );
 }
 
+interface ConnectionStatusIndicatorProps {
+  status: ConnectionStatus;
+  error: string;
+}
+
 /** Renders a connection status indicator. */
-function ConnectionStatusIndicator({ status, error }: { status: ConnectionStatus; error: string }) {
+function ConnectionStatusIndicator({ status, error }: ConnectionStatusIndicatorProps) {
   if (status === "idle") return null;
 
   if (status === "testing") {
@@ -643,20 +605,16 @@ function ConnectionStatusIndicator({ status, error }: { status: ConnectionStatus
   );
 }
 
-/** A theme toggle button -- visually selected when it matches the current theme. */
-function ThemeButton({
-  value,
-  label,
-  icon,
-  current,
-  onSelect,
-}: {
+interface ThemeButtonProps {
   value: Theme;
   label: string;
   icon: React.ReactNode;
   current: Theme;
   onSelect: (value: string) => void;
-}) {
+}
+
+/** A theme toggle button -- visually selected when it matches the current theme. */
+function ThemeButton({ value, label, icon, current, onSelect }: ThemeButtonProps) {
   const isActive = current === value;
   return (
     <Button
@@ -672,14 +630,13 @@ function ThemeButton({
   );
 }
 
-/** Renders the model dropdown content -- avoids a nested ternary in JSX. */
-function ModelSelectOptions({
-  models,
-  loading,
-}: {
-  models: { id: string; name: string }[];
+interface ModelSelectOptionsProps {
+  models: Model[];
   loading: boolean;
-}) {
+}
+
+/** Renders the model dropdown content -- avoids a nested ternary in JSX. */
+function ModelSelectOptions({ models, loading }: ModelSelectOptionsProps) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-4">
@@ -702,7 +659,7 @@ function ModelSelectOptions({
 }
 
 /** Triggers a browser download for a blob. */
-function triggerDownload(blob: Blob, filename: string) {
+function triggerDownload(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;

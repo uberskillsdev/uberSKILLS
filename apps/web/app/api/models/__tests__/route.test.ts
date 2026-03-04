@@ -25,13 +25,17 @@ describe("GET /api/models", () => {
     expect(data.code).toBe("NO_API_KEY");
   });
 
-  it("returns sorted model list on success", async () => {
+  it("returns sorted model list with provider field on success", async () => {
     mockedGetDecryptedApiKey.mockReturnValue("sk-or-v1-test");
 
     const mockModels = {
       data: [
-        { id: "z-model", name: "Z Model" },
-        { id: "a-model", name: "A Model" },
+        { id: "openai/gpt-4", name: "GPT-4", architecture: { modality: "text->text" } },
+        {
+          id: "anthropic/claude-sonnet-4",
+          name: "Claude Sonnet 4",
+          architecture: { modality: "text->text" },
+        },
       ],
     };
 
@@ -44,8 +48,54 @@ describe("GET /api/models", () => {
 
     expect(response.status).toBe(200);
     expect(data.models).toHaveLength(2);
-    expect(data.models[0].name).toBe("A Model");
-    expect(data.models[1].name).toBe("Z Model");
+    // Sorted by provider: anthropic before openai
+    expect(data.models[0].id).toBe("anthropic/claude-sonnet-4");
+    expect(data.models[0].provider).toBe("anthropic");
+    expect(data.models[1].id).toBe("openai/gpt-4");
+    expect(data.models[1].provider).toBe("openai");
+  });
+
+  it("filters out non-chat-capable models", async () => {
+    mockedGetDecryptedApiKey.mockReturnValue("sk-or-v1-test");
+
+    const mockModels = {
+      data: [
+        { id: "openai/gpt-4", name: "GPT-4", architecture: { modality: "text->text" } },
+        {
+          id: "stability/sdxl",
+          name: "Stable Diffusion",
+          architecture: { modality: "text->image" },
+        },
+      ],
+    };
+
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify(mockModels), { status: 200 }),
+    );
+
+    const response = await GET();
+    const data = await response.json();
+
+    expect(data.models).toHaveLength(1);
+    expect(data.models[0].id).toBe("openai/gpt-4");
+  });
+
+  it("includes models without architecture info", async () => {
+    mockedGetDecryptedApiKey.mockReturnValue("sk-or-v1-test");
+
+    const mockModels = {
+      data: [{ id: "unknown/model", name: "Unknown Model" }],
+    };
+
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify(mockModels), { status: 200 }),
+    );
+
+    const response = await GET();
+    const data = await response.json();
+
+    expect(data.models).toHaveLength(1);
+    expect(data.models[0].provider).toBe("unknown");
   });
 
   it("returns 401 when OpenRouter returns 401", async () => {
