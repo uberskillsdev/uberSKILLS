@@ -11,6 +11,7 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@ai-sdk/react": "^3.0.114",
     "@libsql/client": "^0.17.0",
     "@openrouter/ai-sdk-provider": "^2.2.3",
     "@tailwindcss/postcss": "^4.2.1",
