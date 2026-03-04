@@ -12,11 +12,13 @@
   },
   "dependencies": {
     "@libsql/client": "^0.17.0",
+    "@openrouter/ai-sdk-provider": "^2.2.3",
     "@tailwindcss/postcss": "^4.2.1",
     "@uberskillz/db": "workspace:*",
     "@uberskillz/skill-engine": "workspace:*",
     "@uberskillz/types": "workspace:*",
     "@uberskillz/ui": "workspace:*",
+    "ai": "^6.0.112",
     "better-sqlite3": "^12.6.2",
     "drizzle-orm": "^0.45.1",
     "fflate": "^0.8.2",
