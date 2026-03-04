@@ -13,6 +13,7 @@ export type {
   CreateSkillInput,
   ListSkillsOptions,
   ListSkillsResult,
+  SkillSortKey,
   UpdateSkillInput,
 } from "./queries/skills";
 export {

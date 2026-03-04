@@ -1,11 +1,14 @@
 import type { SkillStatus } from "@uberskillz/types";
-import { and, count, desc, eq, like, or } from "drizzle-orm";
+import { and, asc, count, desc, eq, like, or } from "drizzle-orm";
 import { getDb } from "../client";
 import { skills } from "../schema";
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
+
+/** Sort keys for listing skills. */
+export type SkillSortKey = "updated" | "name_asc" | "name_desc" | "newest" | "oldest";
 
 /** Options for listing skills with search, filtering, and pagination. */
 export interface ListSkillsOptions {
@@ -17,6 +20,8 @@ export interface ListSkillsOptions {
   page?: number;
   /** Results per page (default: 12). */
   limit?: number;
+  /** Sort order (default: "updated" — most recently updated first). */
+  sort?: SkillSortKey;
 }
 
 /** Paginated result from `listSkills`. */
@@ -105,12 +110,12 @@ function generateUniqueSlug(name: string, excludeId?: string): string {
 // ---------------------------------------------------------------------------
 
 /**
- * Lists skills with optional search, status filter, and pagination.
- * Results are sorted by `updated_at` descending (most recently updated first).
+ * Lists skills with optional search, status filter, pagination, and sort order.
+ * Defaults to sorting by `updated_at` descending (most recently updated first).
  */
 export function listSkills(options: ListSkillsOptions = {}): ListSkillsResult {
   const db = getDb();
-  const { search, status, page = 1, limit = 12 } = options;
+  const { search, status, page = 1, limit = 12, sort = "updated" } = options;
   const offset = (page - 1) * limit;
 
   // Build WHERE conditions
@@ -129,6 +134,22 @@ export function listSkills(options: ListSkillsOptions = {}): ListSkillsResult {
 
   const where = conditions.length > 0 ? and(...conditions) : undefined;
 
+  // Resolve sort column and direction
+  const orderBy = (() => {
+    switch (sort) {
+      case "name_asc":
+        return asc(skills.name);
+      case "name_desc":
+        return desc(skills.name);
+      case "newest":
+        return desc(skills.createdAt);
+      case "oldest":
+        return asc(skills.createdAt);
+      default:
+        return desc(skills.updatedAt);
+    }
+  })();
+
   // Get total count for pagination
   const [totalRow] = db.select({ count: count() }).from(skills).where(where).all();
   const total = totalRow?.count ?? 0;
@@ -138,7 +159,7 @@ export function listSkills(options: ListSkillsOptions = {}): ListSkillsResult {
     .select()
     .from(skills)
     .where(where)
-    .orderBy(desc(skills.updatedAt))
+    .orderBy(orderBy)
     .limit(limit)
     .offset(offset)
     .all();
