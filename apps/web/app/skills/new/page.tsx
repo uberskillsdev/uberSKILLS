@@ -5,7 +5,7 @@ import type { AppSettings } from "@uberskillz/types";
 import { DefaultChatTransport } from "ai";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { ChatPanel } from "@/components/chat/chat-panel";
 import { SkillPreviewPanel } from "@/components/chat/skill-preview-panel";
@@ -24,6 +24,8 @@ import { useModels } from "@/hooks/use-models";
  */
 export default function NewSkillPage() {
   const [selectedModel, setSelectedModel] = useState("");
+  const selectedModelRef = useRef(selectedModel);
+  selectedModelRef.current = selectedModel;
   const [hasApiKey, setHasApiKey] = useState<boolean | null>(null);
   const [input, setInput] = useState("");
 
@@ -55,9 +57,9 @@ export default function NewSkillPage() {
     () =>
       new DefaultChatTransport({
         api: "/api/chat",
-        body: { model: selectedModel },
+        body: () => ({ model: selectedModelRef.current }),
       }),
-    [selectedModel],
+    [],
   );
 
   const { messages, status, error, sendMessage, regenerate, stop } = useChat({ transport });
