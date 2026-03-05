@@ -65,7 +65,6 @@ export function AppSidebar() {
           <span className="truncate text-xl font-bold tracking-tight">
             {isCollapsed ? "U" : "UberSkills"}
           </span>
-          {!isCollapsed && <span className="text-xs text-muted-foreground">v0.0.0</span>}
         </Link>
       </SidebarHeader>
 
