@@ -247,9 +247,9 @@ export function EditorShell({ skill, files }: EditorShellProps) {
         params.set("tab", tab);
       }
       const query = params.toString();
-      router.replace(`/skills/${skill.id}${query ? `?${query}` : ""}`, { scroll: false });
+      router.replace(`/skills/${skill.slug}${query ? `?${query}` : ""}`, { scroll: false });
     },
-    [router, searchParams, skill.id],
+    [router, searchParams, skill.slug],
   );
 
   // ------- Inline name editing (separate from auto-save — has its own UX) -------
@@ -462,7 +462,7 @@ export function EditorShell({ skill, files }: EditorShellProps) {
           </Button>
 
           <Button variant="outline" size="sm" asChild>
-            <Link href={`/skills/${skill.id}/test`}>
+            <Link href={`/skills/${skill.slug}/test`}>
               <Play className="size-4" />
               Test
             </Link>
