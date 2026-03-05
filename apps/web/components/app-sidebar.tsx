@@ -9,6 +9,7 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
@@ -28,6 +29,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const navItems = [
   { href: "/skills", label: "Skills", icon: LibraryIcon },
@@ -57,6 +59,14 @@ export function AppSidebar() {
   const pathname = usePathname();
   const { state, toggleSidebar } = useSidebar();
   const isCollapsed = state === "collapsed";
+  const [skillCount, setSkillCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch("/api/skills?limit=1")
+      .then((res) => res.json())
+      .then((data) => setSkillCount(data.total ?? null))
+      .catch(() => setSkillCount(null));
+  }, [pathname]);
 
   return (
     <Sidebar collapsible="icon">
@@ -85,6 +95,11 @@ export function AppSidebar() {
                         <span>{label}</span>
                       </Link>
                     </SidebarMenuButton>
+                    {href === "/skills" && skillCount !== null && (
+                      <SidebarMenuBadge className="flex size-5 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-600">
+                        {skillCount}
+                      </SidebarMenuBadge>
+                    )}
                   </SidebarMenuItem>
                 );
               })}
