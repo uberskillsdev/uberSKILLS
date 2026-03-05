@@ -6,6 +6,7 @@ const DB_EXTERNALS =
   /^(@libsql\/|libsql|better-sqlite3|bun:sqlite|drizzle-orm\/libsql|drizzle-orm\/bun-sqlite|drizzle-orm\/better-sqlite3)/;
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   outputFileTracingRoot: path.join(__dirname, "../../"),
   transpilePackages: [
     "@uberskills/ui",

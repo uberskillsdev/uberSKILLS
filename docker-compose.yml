@@ -1,0 +1,14 @@
+services:
+  uberskills:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - uberskills-data:/app/data
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=file:/app/data/uberskills.db
+    restart: unless-stopped
+
+volumes:
+  uberskills-data:
