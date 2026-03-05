@@ -30,6 +30,7 @@ uberskills/
 │   └── web/                    # Next.js 15 app (App Router)
 │       ├── app/                # Routes and API handlers
 │       ├── components/         # React components
+│       ├── e2e/                # Playwright E2E tests
 │       ├── hooks/              # Custom React hooks
 │       ├── lib/                # Utilities and constants
 │       └── styles/             # Global CSS with design tokens
@@ -38,7 +39,11 @@ uberskills/
 │   ├── db/                     # @uberskills/db -- Drizzle schema, queries, crypto
 │   ├── skill-engine/           # @uberskills/skill-engine -- parser, validator, generator, importer, exporter
 │   └── ui/                     # @uberskills/ui -- shadcn/ui components
-└── specs/                      # Project specifications (read-only reference)
+├── specs/                      # Project specifications (read-only reference)
+├── Dockerfile                  # Multi-stage Docker build
+├── docker-compose.yml          # Docker Compose service definition
+├── CONTRIBUTING.md             # Contribution guidelines
+└── LICENSE                     # MIT license
 ```
 
 ### Package Responsibilities
@@ -232,6 +237,14 @@ return NextResponse.json({ error: "Human-readable message", code: "ERROR_CODE" }
 | `ENCRYPTION_SECRET` | Auto-generated at `data/.secret` | AES-256-GCM key for API key encryption |
 | `PORT` | `3000` | Web server port |
 | `NODE_ENV` | `development` | Environment mode |
+
+## Docker Deployment
+
+- `Dockerfile` -- multi-stage build using `oven/bun:1` base image (deps → builder → runner stages).
+- `docker-compose.yml` -- service definition with volume mount for `data/` persistence.
+- `.dockerignore` -- excludes `node_modules`, `.git`, `data/`, `.env*`.
+- Production runs as non-root user (`nextjs:nodejs`), exposes port 3000.
+- Build and run: `docker compose up -d`.
 
 ## Specification Reference
 

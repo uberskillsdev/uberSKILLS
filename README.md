@@ -111,6 +111,22 @@ Full project specifications are available in the [`specs/`](specs/) directory:
 - [06 -- Integrations](specs/06-integrations/README.md) -- OpenRouter, AI models
 - [07 -- Deployment](specs/07-deployment/README.md) -- Docker, environment setup
 
+## Docker
+
+Build and run via Docker:
+
+```bash
+docker compose up -d
+```
+
+The app will be available at [http://localhost:3000](http://localhost:3000). The `data/` directory is mounted as a volume for persistence.
+
+See [`Dockerfile`](Dockerfile) and [`docker-compose.yml`](docker-compose.yml) for details.
+
+## Contributing
+
+Contributions are welcome! Please read the [Contributing Guide](CONTRIBUTING.md) for details on our development workflow, coding standards, and how to submit pull requests.
+
 ## License
 
 [MIT](LICENSE)
