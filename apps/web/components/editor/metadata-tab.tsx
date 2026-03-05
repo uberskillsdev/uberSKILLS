@@ -126,7 +126,7 @@ export function MetadataTab({ skill, validationErrors, onFieldChange }: Metadata
   const modelPatternError = fieldMessage("modelPattern", "error");
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6">
       <FormField label="Name" required htmlFor="metadata-name" error={nameError}>
         <Input
           id="metadata-name"

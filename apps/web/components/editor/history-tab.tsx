@@ -103,7 +103,7 @@ export function HistoryTab({ skillId }: HistoryTabProps) {
 
   if (versions.length === 0) {
     return (
-      <div className="mx-auto max-w-2xl">
+      <div className="mx-auto max-w-3xl">
         <EmptyState
           icon={History}
           title="No version history"
@@ -119,7 +119,7 @@ export function HistoryTab({ skillId }: HistoryTabProps) {
   const latestVersionId = versions[0]?.id;
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6">
       <div>
         <h2 className="text-section-heading">Version History</h2>
         <p className="text-sm text-muted-foreground">

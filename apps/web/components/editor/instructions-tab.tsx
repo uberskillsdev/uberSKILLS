@@ -69,7 +69,7 @@ export function InstructionsTab({ skill, onContentChange }: InstructionsTabProps
   );
 
   return (
-    <div className="mx-auto max-w-2xl space-y-3">
+    <div className="mx-auto max-w-3xl space-y-3">
       <div
         className="relative flex overflow-hidden rounded-md border border-input focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50"
         style={{ minHeight: "400px", maxHeight: "70vh" }}

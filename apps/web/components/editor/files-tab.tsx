@@ -81,7 +81,7 @@ export function FilesTab({ skillId, files, onChanged }: FilesTabProps) {
   }, [editingFile, onChanged]);
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6">
       {/* Header with Add button */}
       <div className="flex items-center justify-between">
         <div>

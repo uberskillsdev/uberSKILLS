@@ -63,7 +63,7 @@ export function PreviewTab({ skill, files, validationErrors }: PreviewTabProps) 
   const warnings = validationErrors.filter((e) => e.severity === "warning");
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6">
       {/* Header with copy button */}
       <div className="flex items-center justify-between">
         <div>
