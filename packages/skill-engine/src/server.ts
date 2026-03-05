@@ -2,3 +2,9 @@
 // Import via "@uberskills/skill-engine/server" in API routes only.
 
 export { deployToFilesystem, exportToZip } from "./exporter";
+export {
+  type ImportedFile,
+  type ImportResult,
+  importFromDirectory,
+  importFromZip,
+} from "./importer";
