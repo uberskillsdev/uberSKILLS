@@ -23,7 +23,7 @@ const mockedResetDb = vi.mocked(resetDbForTesting);
 const { POST } = await import("../route");
 
 /** Helper to build a FormData request with a file Blob. */
-function makeRequest(content: Buffer | null): Request {
+function makeRequest(content: Uint8Array<ArrayBuffer> | null): Request {
   const formData = new FormData();
   if (content) {
     formData.append("file", new Blob([content]));
