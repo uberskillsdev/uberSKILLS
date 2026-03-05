@@ -1,6 +1,12 @@
 {
   "name": "uberskills",
   "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/uberskills/uberskills.git"
+  },
+  "homepage": "https://github.com/uberskills/uberskills",
   "workspaces": [
     "apps/*",
     "packages/*"
