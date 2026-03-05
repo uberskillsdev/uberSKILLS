@@ -4,6 +4,9 @@ import { resetDbForTesting } from "@uberskills/db";
 import { type NextRequest, NextResponse } from "next/server";
 
 import { getDbPath } from "@/lib/db-path";
+import { routeLogger } from "@/lib/logger";
+
+const log = routeLogger("POST", "/api/backup/restore");
 
 /** First 16 bytes of every valid SQLite database file. */
 const SQLITE_MAGIC = "SQLite format 3\0";
@@ -41,6 +44,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const buffer = Buffer.from(arrayBuffer);
 
     if (buffer.length < 16 || buffer.subarray(0, 16).toString("ascii") !== SQLITE_MAGIC) {
+      log.warn("invalid SQLite file uploaded");
       return NextResponse.json(
         { error: "Invalid file. Please upload a valid SQLite database.", code: "INVALID_FILE" },
         { status: 400 },
@@ -64,8 +68,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     // Reset the cached DB connection so subsequent queries use the new file
     resetDbForTesting();
 
+    log.info({ sizeBytes: buffer.length }, "database restored");
     return NextResponse.json({ status: "restored" });
-  } catch {
+  } catch (err) {
+    log.error({ err }, "failed to restore database");
     return NextResponse.json(
       { error: "Failed to restore database.", code: "RESTORE_ERROR" },
       { status: 500 },

@@ -8,6 +8,11 @@ import {
 import type { SkillStatus } from "@uberskills/types";
 import { NextResponse } from "next/server";
 
+import { routeLogger } from "@/lib/logger";
+
+const getLog = routeLogger("GET", "/api/skills");
+const postLog = routeLogger("POST", "/api/skills");
+
 const VALID_STATUSES: SkillStatus[] = ["draft", "ready", "deployed"];
 const VALID_SORTS: SkillSortKey[] = ["updated", "name_asc", "name_desc", "newest", "oldest"];
 const MAX_NAME_LENGTH = 100;
@@ -63,13 +68,16 @@ export async function GET(request: Request): Promise<NextResponse> {
       sort: sort ?? undefined,
     });
 
+    getLog.debug({ search, status, sort, page: parsedPage, limit: parsedLimit }, "list params");
+    getLog.info({ total: result.total }, "skills listed");
     return NextResponse.json({
       skills: result.data,
       total: result.total,
       page: result.page,
       totalPages: result.totalPages,
     });
-  } catch {
+  } catch (err) {
+    getLog.error({ err }, "failed to list skills");
     return NextResponse.json(
       { error: "Failed to list skills", code: "SKILLS_LIST_ERROR" },
       { status: 500 },
@@ -175,6 +183,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       content: (content as string | undefined) ?? "",
     };
 
+    postLog.debug({ name: input.name }, "creating skill");
     const skill = createSkill(input);
 
     createVersion({
@@ -189,8 +198,10 @@ export async function POST(request: Request): Promise<NextResponse> {
       changeSummary: "Initial version",
     });
 
+    postLog.info({ id: skill.id, slug: skill.slug }, "skill created");
     return NextResponse.json(skill, { status: 201 });
-  } catch {
+  } catch (err) {
+    postLog.error({ err }, "failed to create skill");
     return NextResponse.json(
       { error: "Failed to create skill", code: "SKILL_CREATE_ERROR" },
       { status: 500 },

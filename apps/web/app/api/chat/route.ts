@@ -4,7 +4,10 @@ import { getDecryptedApiKey } from "@uberskills/db";
 import { convertToModelMessages, streamText } from "ai";
 import { NextResponse } from "next/server";
 
+import { routeLogger } from "@/lib/logger";
 import { SKILL_CREATION_SYSTEM_PROMPT } from "@/lib/system-prompts";
+
+const log = routeLogger("POST", "/api/chat");
 
 /** Expected request body for the POST /api/chat route. */
 interface ChatRequestBody {
@@ -60,6 +63,8 @@ export async function POST(request: Request): Promise<Response> {
     );
   }
 
+  log.info({ model, messageCount: messages.length }, "chat stream started");
+
   const openrouter = createOpenRouter({
     apiKey,
     headers: {
@@ -78,6 +83,7 @@ export async function POST(request: Request): Promise<Response> {
       messages: await convertToModelMessages(messages),
     });
 
+    log.debug("stream initiated");
     return result.toUIMessageStreamResponse();
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
@@ -92,6 +98,7 @@ export async function POST(request: Request): Promise<Response> {
       );
     }
 
+    log.error({ err: error }, "chat stream failed");
     return NextResponse.json(
       { error: "Failed to generate response from AI provider.", code: "UPSTREAM_ERROR" },
       { status: 502 },

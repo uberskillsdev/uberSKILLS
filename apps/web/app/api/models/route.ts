@@ -1,7 +1,10 @@
 import { isModelCacheEmpty, listModels } from "@uberskills/db";
 import { NextResponse } from "next/server";
 
+import { routeLogger } from "@/lib/logger";
 import { fetchAndSyncModels } from "@/lib/sync-models";
+
+const log = routeLogger("GET", "/api/models");
 
 /**
  * GET /api/models -- Returns cached models from the database.
@@ -35,8 +38,10 @@ export async function GET(): Promise<NextResponse> {
       }))
       .sort((a, b) => a.provider.localeCompare(b.provider) || a.name.localeCompare(b.name));
 
+    log.info({ count: models.length }, "models loaded");
     return NextResponse.json({ models });
-  } catch {
+  } catch (err) {
+    log.error({ err }, "failed to load models");
     return NextResponse.json(
       { error: "Failed to load models", code: "INTERNAL_ERROR" },
       { status: 500 },

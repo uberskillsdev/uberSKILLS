@@ -4,6 +4,10 @@ import { substitute } from "@uberskills/skill-engine";
 import { streamText } from "ai";
 import { NextResponse } from "next/server";
 
+import { routeLogger } from "@/lib/logger";
+
+const log = routeLogger("POST", "/api/test");
+
 /** Expected request body for POST /api/test. */
 interface TestRequestBody {
   skillId: string;
@@ -93,6 +97,8 @@ export async function POST(request: Request): Promise<Response> {
   const substitutionValues = args ?? {};
   const resolvedContent = substitute(skill.content, substitutionValues);
 
+  log.info({ skillId, model }, "test run started");
+
   // Persist test run with status "running" before streaming starts
   const testRun = createTestRun({
     skillId,
@@ -101,6 +107,8 @@ export async function POST(request: Request): Promise<Response> {
     userMessage,
     arguments: JSON.stringify(substitutionValues),
   });
+
+  const rlog = log.child({ testRunId: testRun.id });
 
   // Record request start time for latency and TTFT measurement
   const startMs = Date.now();
@@ -138,6 +146,8 @@ export async function POST(request: Request): Promise<Response> {
           ttftMs,
           status: "completed",
         });
+
+        rlog.info({ latencyMs, tokens: usage.totalTokens ?? 0, ttftMs }, "test run completed");
       },
       // Persist error details if streaming fails mid-stream
       async onError({ error }) {
@@ -150,6 +160,8 @@ export async function POST(request: Request): Promise<Response> {
           status: "error",
           error: message,
         });
+
+        rlog.error({ err: error, latencyMs }, "test run stream error");
       },
     });
 
@@ -168,6 +180,8 @@ export async function POST(request: Request): Promise<Response> {
       status: "error",
       error: message,
     });
+
+    rlog.error({ err: error, latencyMs }, "test run failed");
 
     if (message.includes("401") || message.includes("Unauthorized")) {
       return NextResponse.json({ error: "Invalid API key", code: "INVALID_KEY" }, { status: 401 });

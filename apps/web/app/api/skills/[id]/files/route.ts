@@ -2,24 +2,33 @@ import { createFile, getSkillById, listFiles } from "@uberskills/db";
 import type { FileType } from "@uberskills/types";
 import { NextResponse } from "next/server";
 
+import { routeLogger } from "@/lib/logger";
+
 const VALID_FILE_TYPES: FileType[] = ["prompt", "resource"];
 const PATH_TRAVERSAL_PATTERN = /(?:^|\/)\.\.(?:\/|$)/;
+
+const getLog = routeLogger("GET", "/api/skills/[id]/files");
+const postLog = routeLogger("POST", "/api/skills/[id]/files");
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 // GET /api/skills/[id]/files — list all files for a skill
 export async function GET(_request: Request, context: RouteContext): Promise<NextResponse> {
   const { id } = await context.params;
+  const rlog = getLog.child({ skillId: id });
 
   try {
     const skill = getSkillById(id);
     if (!skill) {
+      rlog.warn("skill not found");
       return NextResponse.json({ error: "Skill not found", code: "NOT_FOUND" }, { status: 404 });
     }
 
     const files = listFiles(id);
+    rlog.info({ count: files.length }, "files listed");
     return NextResponse.json({ files });
-  } catch {
+  } catch (err) {
+    rlog.error({ err }, "failed to list files");
     return NextResponse.json(
       { error: "Failed to list files", code: "FILES_READ_ERROR" },
       { status: 500 },
@@ -30,6 +39,7 @@ export async function GET(_request: Request, context: RouteContext): Promise<Nex
 // POST /api/skills/[id]/files — create a new file for a skill
 export async function POST(request: Request, context: RouteContext): Promise<NextResponse> {
   const { id } = await context.params;
+  const rlog = postLog.child({ skillId: id });
 
   let body: Record<string, unknown>;
   try {
@@ -106,8 +116,10 @@ export async function POST(request: Request, context: RouteContext): Promise<Nex
       type: (type as FileType) ?? "resource",
     });
 
+    rlog.info({ fileId: file.id, path: trimmedPath }, "file created");
     return NextResponse.json(file, { status: 201 });
-  } catch {
+  } catch (err) {
+    rlog.error({ err }, "failed to create file");
     return NextResponse.json(
       { error: "Failed to create file", code: "FILE_CREATE_ERROR" },
       { status: 500 },

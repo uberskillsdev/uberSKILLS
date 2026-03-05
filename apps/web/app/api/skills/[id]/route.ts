@@ -9,26 +9,36 @@ import {
 import type { SkillStatus } from "@uberskills/types";
 import { NextResponse } from "next/server";
 
+import { routeLogger } from "@/lib/logger";
+
 const VALID_STATUSES: SkillStatus[] = ["draft", "ready", "deployed"];
 const MAX_NAME_LENGTH = 100;
 const MAX_DESCRIPTION_LENGTH = 500;
+
+const getLog = routeLogger("GET", "/api/skills/[id]");
+const putLog = routeLogger("PUT", "/api/skills/[id]");
+const deleteLog = routeLogger("DELETE", "/api/skills/[id]");
 
 type RouteContext = { params: Promise<{ id: string }> };
 
 // GET /api/skills/[id] — returns a single skill with its associated files
 export async function GET(_request: Request, context: RouteContext): Promise<NextResponse> {
   const { id } = await context.params;
+  const rlog = getLog.child({ skillId: id });
 
   try {
     const skill = getSkillById(id);
     if (!skill) {
+      rlog.warn("skill not found");
       return NextResponse.json({ error: "Skill not found", code: "NOT_FOUND" }, { status: 404 });
     }
 
     const files = listFiles(id);
 
+    rlog.info("skill retrieved");
     return NextResponse.json({ ...skill, files });
-  } catch {
+  } catch (err) {
+    rlog.error({ err }, "failed to retrieve skill");
     return NextResponse.json(
       { error: "Failed to retrieve skill", code: "SKILL_READ_ERROR" },
       { status: 500 },
@@ -39,6 +49,7 @@ export async function GET(_request: Request, context: RouteContext): Promise<Nex
 // PUT /api/skills/[id] — updates skill fields; creates a new version if content or metadata changed
 export async function PUT(request: Request, context: RouteContext): Promise<NextResponse> {
   const { id } = await context.params;
+  const rlog = putLog.child({ skillId: id });
 
   let body: Record<string, unknown>;
   try {
@@ -190,8 +201,10 @@ export async function PUT(request: Request, context: RouteContext): Promise<Next
       });
     }
 
+    rlog.info("skill updated");
     return NextResponse.json(updated);
-  } catch {
+  } catch (err) {
+    rlog.error({ err }, "failed to update skill");
     return NextResponse.json(
       { error: "Failed to update skill", code: "SKILL_UPDATE_ERROR" },
       { status: 500 },
@@ -202,15 +215,19 @@ export async function PUT(request: Request, context: RouteContext): Promise<Next
 // DELETE /api/skills/[id] — deletes a skill and all related data (files, versions, test runs)
 export async function DELETE(_request: Request, context: RouteContext): Promise<NextResponse> {
   const { id } = await context.params;
+  const rlog = deleteLog.child({ skillId: id });
 
   try {
     const deleted = deleteSkill(id);
     if (!deleted) {
+      rlog.warn("skill not found");
       return NextResponse.json({ error: "Skill not found", code: "NOT_FOUND" }, { status: 404 });
     }
 
+    rlog.info("skill deleted");
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (err) {
+    rlog.error({ err }, "failed to delete skill");
     return NextResponse.json(
       { error: "Failed to delete skill", code: "SKILL_DELETE_ERROR" },
       { status: 500 },

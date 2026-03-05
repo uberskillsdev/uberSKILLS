@@ -2,14 +2,20 @@ import { deleteFile, getSkillById, listFiles, updateFile } from "@uberskills/db"
 import type { FileType } from "@uberskills/types";
 import { NextResponse } from "next/server";
 
+import { routeLogger } from "@/lib/logger";
+
 const VALID_FILE_TYPES: FileType[] = ["prompt", "resource"];
 const PATH_TRAVERSAL_PATTERN = /(?:^|\/)\.\.(?:\/|$)/;
+
+const putLog = routeLogger("PUT", "/api/skills/[id]/files/[fileId]");
+const deleteFileLog = routeLogger("DELETE", "/api/skills/[id]/files/[fileId]");
 
 type RouteContext = { params: Promise<{ id: string; fileId: string }> };
 
 // PUT /api/skills/[id]/files/[fileId] — update a file's path, content, or type
 export async function PUT(request: Request, context: RouteContext): Promise<NextResponse> {
   const { id, fileId } = await context.params;
+  const rlog = putLog.child({ skillId: id, fileId });
 
   let body: Record<string, unknown>;
   try {
@@ -86,11 +92,14 @@ export async function PUT(request: Request, context: RouteContext): Promise<Next
     });
 
     if (!updated) {
+      rlog.warn("file not found");
       return NextResponse.json({ error: "File not found", code: "NOT_FOUND" }, { status: 404 });
     }
 
+    rlog.info("file updated");
     return NextResponse.json(updated);
-  } catch {
+  } catch (err) {
+    rlog.error({ err }, "failed to update file");
     return NextResponse.json(
       { error: "Failed to update file", code: "FILE_UPDATE_ERROR" },
       { status: 500 },
@@ -101,20 +110,25 @@ export async function PUT(request: Request, context: RouteContext): Promise<Next
 // DELETE /api/skills/[id]/files/[fileId] — delete a file
 export async function DELETE(_request: Request, context: RouteContext): Promise<NextResponse> {
   const { id, fileId } = await context.params;
+  const rlog = deleteFileLog.child({ skillId: id, fileId });
 
   const skill = getSkillById(id);
   if (!skill) {
+    rlog.warn("skill not found");
     return NextResponse.json({ error: "Skill not found", code: "NOT_FOUND" }, { status: 404 });
   }
 
   try {
     const deleted = deleteFile(fileId);
     if (!deleted) {
+      rlog.warn("file not found");
       return NextResponse.json({ error: "File not found", code: "NOT_FOUND" }, { status: 404 });
     }
 
+    rlog.info("file deleted");
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (err) {
+    rlog.error({ err }, "failed to delete file");
     return NextResponse.json(
       { error: "Failed to delete file", code: "FILE_DELETE_ERROR" },
       { status: 500 },

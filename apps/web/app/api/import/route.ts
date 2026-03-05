@@ -9,6 +9,10 @@ import type { ImportResult } from "@uberskills/skill-engine/server";
 import { importFromDirectory, importFromZip } from "@uberskills/skill-engine/server";
 import { NextResponse } from "next/server";
 
+import { routeLogger } from "@/lib/logger";
+
+const log = routeLogger("POST", "/api/import");
+
 /** Slug derived from a skill name, matching the DB's slugify logic. */
 function slugify(name: string): string {
   return name
@@ -110,6 +114,8 @@ async function handleZipUpload(request: Request): Promise<NextResponse> {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
     const results = await importFromZip(buffer);
+    log.debug({ type: "zip" }, "import scanned");
+    log.info({ count: results.length }, "skills parsed from zip");
     return NextResponse.json({ skills: addConflictInfo(results) });
   } catch {
     return NextResponse.json(
@@ -131,6 +137,8 @@ async function handleDirectoryScan(body: Record<string, unknown>): Promise<NextR
 
   try {
     const results = await importFromDirectory(path);
+    log.debug({ type: "directory", path }, "import scanned");
+    log.info({ count: results.length }, "skills parsed from directory");
     return NextResponse.json({ skills: addConflictInfo(results) });
   } catch {
     return NextResponse.json(
@@ -235,8 +243,10 @@ async function handleConfirm(body: Record<string, unknown>): Promise<NextRespons
       });
     }
 
+    log.info({ count: imported.length }, "skills imported");
     return NextResponse.json({ imported }, { status: 201 });
-  } catch {
+  } catch (err) {
+    log.error({ err }, "failed to save imported skills");
     return NextResponse.json(
       { error: "Failed to save imported skills to database", code: "IMPORT_SAVE_ERROR" },
       { status: 500 },

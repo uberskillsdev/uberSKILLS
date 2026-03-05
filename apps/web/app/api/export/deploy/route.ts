@@ -3,6 +3,10 @@ import { deployToFilesystem } from "@uberskills/skill-engine/server";
 import type { Skill, SkillFile } from "@uberskills/types";
 import { NextResponse } from "next/server";
 
+import { routeLogger } from "@/lib/logger";
+
+const log = routeLogger("POST", "/api/export/deploy");
+
 /**
  * POST /api/export/deploy -- Deploys a skill to the local filesystem.
  *
@@ -52,15 +56,18 @@ export async function POST(request: Request): Promise<NextResponse> {
     // Update skill status to "deployed"
     updateSkill(skillId, { status: "deployed" });
 
+    log.info({ skillId, path: deployedPath }, "skill deployed");
     return NextResponse.json({ path: deployedPath, status: "deployed" });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
 
     // Surface path traversal errors as 400
     if (message.includes("Path traversal")) {
+      log.warn({ skillId }, "path traversal attempt");
       return NextResponse.json({ error: message, code: "PATH_TRAVERSAL" }, { status: 400 });
     }
 
+    log.error({ err, skillId }, "failed to deploy skill");
     return NextResponse.json(
       { error: `Failed to deploy skill: ${message}`, code: "DEPLOY_ERROR" },
       { status: 500 },

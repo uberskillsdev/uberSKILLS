@@ -3,6 +3,11 @@ import { generateSkillMd } from "@uberskills/skill-engine";
 import { zipSync } from "fflate";
 import { NextResponse } from "next/server";
 
+import { routeLogger } from "@/lib/logger";
+
+const getLog = routeLogger("GET", "/api/export");
+const postLog = routeLogger("POST", "/api/export");
+
 const encoder = new TextEncoder();
 
 /**
@@ -63,6 +68,7 @@ export async function GET(): Promise<NextResponse> {
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
     const filename = `uberskills-export-${timestamp}.zip`;
 
+    getLog.info({ count: result.data.length }, "all skills exported");
     return new NextResponse(Buffer.from(zipped), {
       status: 200,
       headers: {
@@ -71,7 +77,8 @@ export async function GET(): Promise<NextResponse> {
         "Content-Length": String(zipped.length),
       },
     });
-  } catch {
+  } catch (err) {
+    getLog.error({ err }, "failed to export skills");
     return NextResponse.json(
       { error: "Failed to export skills.", code: "EXPORT_ERROR" },
       { status: 500 },
@@ -136,6 +143,8 @@ export async function POST(request: Request): Promise<NextResponse> {
     // Single skill: use slug as filename; batch: generic name
     const filename = ids.length === 1 ? `${slugs[0]}.zip` : "uberskills-export.zip";
 
+    postLog.debug({ skillIds: ids }, "exporting skills");
+    postLog.info({ filename, count: ids.length }, "skills exported");
     return new NextResponse(Buffer.from(zipped), {
       status: 200,
       headers: {
@@ -144,7 +153,8 @@ export async function POST(request: Request): Promise<NextResponse> {
         "Content-Length": String(zipped.length),
       },
     });
-  } catch {
+  } catch (err) {
+    postLog.error({ err }, "failed to export skills");
     return NextResponse.json(
       { error: "Failed to export skills.", code: "EXPORT_ERROR" },
       { status: 500 },

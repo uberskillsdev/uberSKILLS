@@ -1,15 +1,21 @@
 import { getSkillById, listTestRuns } from "@uberskills/db";
 import { NextResponse } from "next/server";
 
+import { routeLogger } from "@/lib/logger";
+
+const log = routeLogger("GET", "/api/skills/[id]/test-runs");
+
 type RouteContext = { params: Promise<{ id: string }> };
 
 // GET /api/skills/[id]/test-runs — list all test runs for a skill
 export async function GET(_request: Request, context: RouteContext): Promise<NextResponse> {
   const { id } = await context.params;
+  const rlog = log.child({ skillId: id });
 
   try {
     const skill = getSkillById(id);
     if (!skill) {
+      rlog.warn("skill not found");
       return NextResponse.json({ error: "Skill not found", code: "NOT_FOUND" }, { status: 404 });
     }
 
@@ -31,8 +37,10 @@ export async function GET(_request: Request, context: RouteContext): Promise<Nex
       createdAt: run.createdAt,
     }));
 
+    rlog.info({ count: testRuns.length }, "test runs listed");
     return NextResponse.json({ testRuns });
-  } catch {
+  } catch (err) {
+    rlog.error({ err }, "failed to list test runs");
     return NextResponse.json(
       { error: "Failed to list test runs", code: "TEST_RUNS_READ_ERROR" },
       { status: 500 },

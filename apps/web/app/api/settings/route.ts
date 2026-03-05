@@ -2,6 +2,8 @@ import { getAllSettings, getDecryptedApiKey, setSetting } from "@uberskills/db";
 import type { AppSettings, Theme } from "@uberskills/types";
 import { type NextRequest, NextResponse } from "next/server";
 
+import { routeLogger } from "@/lib/logger";
+
 const DEFAULT_MODEL = "anthropic/claude-sonnet-4";
 const DEFAULT_THEME: Theme = "system";
 const VALID_THEMES: Theme[] = ["light", "dark", "system"];
@@ -40,11 +42,16 @@ function respondWithCurrentSettings(): NextResponse<AppSettings> {
   return NextResponse.json(buildAppSettings(rows, decryptedApiKey));
 }
 
+const getLog = routeLogger("GET", "/api/settings");
+const putLog = routeLogger("PUT", "/api/settings");
+
 // GET /api/settings -- returns current application settings with masked API key
 export async function GET(): Promise<NextResponse> {
   try {
+    getLog.info("settings retrieved");
     return respondWithCurrentSettings();
-  } catch {
+  } catch (err) {
+    getLog.error({ err }, "failed to retrieve settings");
     return NextResponse.json(
       { error: "Failed to retrieve settings", code: "SETTINGS_READ_ERROR" },
       { status: 500 },
@@ -108,8 +115,15 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
       setSetting("theme", theme as string);
     }
 
+    const updatedKeys = [
+      openrouterApiKey !== undefined && "openrouterApiKey",
+      defaultModel !== undefined && "defaultModel",
+      theme !== undefined && "theme",
+    ].filter(Boolean);
+    putLog.info({ updatedKeys }, "settings updated");
     return respondWithCurrentSettings();
-  } catch {
+  } catch (err) {
+    putLog.error({ err }, "failed to update settings");
     return NextResponse.json(
       { error: "Failed to update settings", code: "SETTINGS_WRITE_ERROR" },
       { status: 500 },

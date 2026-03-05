@@ -20,6 +20,8 @@ const nextConfig: NextConfig = {
     "better-sqlite3",
     "libsql",
     "archiver",
+    "pino",
+    "pino-pretty",
   ],
   // biome-ignore lint/suspicious/noExplicitAny: webpack config types not available
   webpack: (config: any, { isServer }: { isServer: boolean }) => {
