@@ -1,6 +1,6 @@
+import type { UIMessage } from "@ai-sdk/react";
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
 import { getDecryptedApiKey } from "@uberskills/db";
-import type { UIMessage } from "@ai-sdk/react";
 import { convertToModelMessages, streamText } from "ai";
 import { NextResponse } from "next/server";
 
