@@ -69,9 +69,8 @@ export function AppSidebar() {
         </Link>
       </SidebarHeader>
 
-      <SidebarSeparator />
-
       <SidebarContent>
+        <SidebarSeparator className="mx-0" />
         <SidebarGroup>
           <SidebarGroupLabel>Workspace</SidebarGroupLabel>
           <SidebarGroupContent>
