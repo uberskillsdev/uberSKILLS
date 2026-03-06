@@ -1,6 +1,12 @@
 {
   "name": "uberskills",
   "private": false,
+  "bin": {
+    "uberskills": "./bin/uberskills.mjs"
+  },
+  "files": [
+    "bin/"
+  ],
   "license": "MIT",
   "author": "Helder Vasconcelos",
   "version": "0.9.0",
