@@ -1,6 +1,12 @@
 import { createOpenRouter } from "@openrouter/ai-sdk-provider";
-import { createTestRun, getDecryptedApiKey, getSkillById, updateTestRun } from "@uberskills/db";
-import { substitute } from "@uberskills/skill-engine";
+import {
+  createTestRun,
+  getDecryptedApiKey,
+  getSkillById,
+  listFiles,
+  updateTestRun,
+} from "@uberskills/db";
+import { buildTestSystemPrompt, substitute } from "@uberskills/skill-engine";
 import { streamText } from "ai";
 import { NextResponse } from "next/server";
 
@@ -97,13 +103,24 @@ export async function POST(request: Request): Promise<Response> {
   const substitutionValues = args ?? {};
   const resolvedContent = substitute(skill.content, substitutionValues);
 
-  log.info({ skillId, model }, "test run started");
+  // Fetch skill files and build system prompt with progressive disclosure.
+  // Prompt files are always inlined; large resource files are summarized.
+  const skillFiles = listFiles(skillId);
+  const { systemPrompt, inlinedCount, summarizedCount } = buildTestSystemPrompt({
+    resolvedContent,
+    files: skillFiles.map((f) => ({ path: f.path, content: f.content, type: f.type })),
+  });
+
+  log.info(
+    { skillId, model, files: skillFiles.length, inlinedCount, summarizedCount },
+    "test run started",
+  );
 
   // Persist test run with status "running" before streaming starts
   const testRun = createTestRun({
     skillId,
     model,
-    systemPrompt: resolvedContent,
+    systemPrompt,
     userMessage,
     arguments: JSON.stringify(substitutionValues),
   });
@@ -125,7 +142,7 @@ export async function POST(request: Request): Promise<Response> {
   try {
     const result = streamText({
       model: openrouter(model),
-      system: resolvedContent,
+      system: systemPrompt,
       messages: [{ role: "user", content: userMessage }],
       // Capture time-to-first-token on the first chunk
       onChunk() {

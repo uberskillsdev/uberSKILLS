@@ -13,7 +13,7 @@ import {
   Separator,
   Textarea,
 } from "@uberskills/ui";
-import { ArrowLeft, Eye, Key, Loader2, Play } from "lucide-react";
+import { ArrowLeft, Eye, FileText, Key, Loader2, Play } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -28,6 +28,8 @@ export interface TestSkillData {
   name: string;
   slug: string;
   content: string;
+  /** Number of bundled files (prompts + resources) associated with this skill. */
+  fileCount: number;
 }
 
 /** Represents the result stream from a test run. */
@@ -180,6 +182,13 @@ export function TestConfigPanel({
                 <DialogTitle>Resolved System Prompt</DialogTitle>
                 <DialogDescription>
                   The system prompt sent to the model with all arguments substituted.
+                  {skill.fileCount > 0 && (
+                    <>
+                      {" "}
+                      {skill.fileCount} bundled file(s) will be appended with progressive
+                      disclosure (prompts inlined, large resources summarized).
+                    </>
+                  )}
                 </DialogDescription>
               </DialogHeader>
               <div className="min-h-0 flex-1 overflow-y-auto rounded-md border border-border bg-muted/50 p-4 font-mono text-xs leading-relaxed whitespace-pre-wrap">
@@ -189,6 +198,12 @@ export function TestConfigPanel({
               </div>
             </DialogContent>
           </Dialog>
+          {skill.fileCount > 0 && (
+            <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+              <FileText className="size-3.5" />
+              {skill.fileCount} bundled file(s) will be included via progressive disclosure.
+            </p>
+          )}
         </div>
 
         {/* Argument inputs for detected placeholders */}

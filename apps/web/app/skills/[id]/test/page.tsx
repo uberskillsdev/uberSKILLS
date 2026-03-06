@@ -1,4 +1,4 @@
-import { getAllSettings, getDecryptedApiKey, getSkillBySlug } from "@uberskills/db";
+import { getAllSettings, getDecryptedApiKey, getSkillBySlug, listFiles } from "@uberskills/db";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
@@ -42,6 +42,9 @@ export default async function SkillTestPage({ params }: TestPageProps) {
     hasApiKey = false;
   }
 
+  // Count bundled files so the UI can inform users about file inclusion.
+  const fileCount = listFiles(skill.id).length;
+
   // Serialise only the fields the client needs (avoids sending Date objects
   // and other Drizzle row data that cannot cross the RSC boundary).
   const skillData: TestSkillData = {
@@ -49,6 +52,7 @@ export default async function SkillTestPage({ params }: TestPageProps) {
     name: skill.name,
     slug: skill.slug,
     content: skill.content,
+    fileCount,
   };
 
   // Suspense boundary is required because TestPageClient (or its descendants)
