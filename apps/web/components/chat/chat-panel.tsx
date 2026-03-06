@@ -87,7 +87,7 @@ export function ChatPanel({
     <div className="flex h-full flex-col">
       {/* Model selector at top */}
       <div className="shrink-0 border-b border-border p-3">
-        <label className="mb-1 block text-xs font-medium text-muted-foreground">Model</label>
+        <span className="mb-1 block text-xs font-medium text-muted-foreground">Model</span>
         <ModelSelector value={selectedModel} onChange={onModelChange} disabled={isStreaming} />
       </div>
 
