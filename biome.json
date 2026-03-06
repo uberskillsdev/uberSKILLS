@@ -8,7 +8,7 @@
       "!**/dist",
       "!**/data",
       "!**/.turbo",
-      "!**/bun.lock",
+      "!**/pnpm-lock.yaml",
       "!**/playwright-report",
       "!**/test-results",
       "!**/coverage"

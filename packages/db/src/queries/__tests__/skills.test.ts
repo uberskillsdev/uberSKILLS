@@ -12,7 +12,7 @@ const TEST_DB_PATH = resolve(process.cwd(), "data/test-skills-query/skills.db");
 let testDb: any;
 let closeDb: () => void;
 
-// Mock getDb() so query functions use our test database instead of bun:sqlite
+// Mock getDb() so query functions use our test database instead of the real client
 vi.mock("../../client", () => ({
   getDb: () => testDb,
   resetDbForTesting: vi.fn(),

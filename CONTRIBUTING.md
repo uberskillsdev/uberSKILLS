@@ -12,11 +12,11 @@ Thank you for your interest in contributing to uberSKILLS! This document provide
    ```
 3. **Install dependencies**:
    ```bash
-   bun install
+   pnpm install
    ```
 4. **Start the dev server**:
    ```bash
-   bun dev
+   pnpm dev
    ```
 5. Open [http://localhost:3000](http://localhost:3000) to verify everything works.
 
@@ -38,10 +38,10 @@ git checkout -b fix/short-description
 2. Write or update tests as needed
 3. Ensure all checks pass before committing:
    ```bash
-   bun lint        # Linting (Biome)
-   bun typecheck   # TypeScript type checking
-   bun test        # Unit tests (Vitest)
-   bun build       # Production build
+   pnpm lint        # Linting (Biome)
+   pnpm typecheck   # TypeScript type checking
+   pnpm test        # Unit tests (Vitest)
+   pnpm build       # Production build
    ```
 
 ### Commit Messages
@@ -77,7 +77,7 @@ test: add parser edge case tests
 
 ### Formatting
 
-Biome handles all formatting. Run `bun format` to auto-format, or configure your editor to format on save. Key rules:
+Biome handles all formatting. Run `pnpm format` to auto-format, or configure your editor to format on save. Key rules:
 
 - 2-space indentation
 - 100-character line width
@@ -121,7 +121,7 @@ Use [GitHub Issues](https://github.com/hvasconcelos/uberskills/issues) to report
 
 - Steps to reproduce (for bugs)
 - Expected vs actual behavior
-- Environment details (OS, Bun version, browser)
+- Environment details (OS, Node.js version, browser)
 
 ## License
 

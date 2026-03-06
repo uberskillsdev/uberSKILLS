@@ -1,6 +1,6 @@
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { DEFAULT_DATABASE_URL, isBunRuntime, openSqliteDb, resolveFileUrl } from "./sqlite-utils";
+import { DEFAULT_DATABASE_URL, openSqliteDb, resolveFileUrl } from "./sqlite-utils";
 
 /**
  * Path to the generated Drizzle migration files (resolved from this module's directory).
@@ -11,8 +11,7 @@ const MIGRATIONS_FOLDER = resolve(__dirname, "migrations");
 /**
  * Runs all pending Drizzle migrations against the SQLite database at `DATABASE_URL`.
  *
- * Automatically detects the runtime (Bun or Node.js) and uses the appropriate
- * SQLite driver. Works as a standalone CLI script and when called from `getDb()`.
+ * Uses better-sqlite3 + drizzle-orm/better-sqlite3 migrator.
  *
  * For Turso / libsql URLs, migrations are skipped (use `drizzle-kit push` instead).
  */
@@ -27,19 +26,15 @@ export function runMigrations(databaseUrl?: string): void {
   const absolutePath = resolveFileUrl(url);
   const { db, close } = openSqliteDb(absolutePath);
 
-  if (isBunRuntime()) {
-    const { migrate } = require("drizzle-orm/bun-sqlite/migrator");
-    migrate(db, { migrationsFolder: MIGRATIONS_FOLDER });
-  } else {
-    const { migrate } = require("drizzle-orm/better-sqlite3/migrator");
-    migrate(db, { migrationsFolder: MIGRATIONS_FOLDER });
-  }
+  const { migrate } = require("drizzle-orm/better-sqlite3/migrator");
+  migrate(db, { migrationsFolder: MIGRATIONS_FOLDER });
 
   close();
 }
 
-// Allow running as a standalone script: `bun run packages/db/src/migrate.ts`
-if (import.meta.main) {
+// Allow running as a standalone script: `tsx packages/db/src/migrate.ts`
+const isMain = process.argv[1] === fileURLToPath(import.meta.url);
+if (isMain) {
   runMigrations();
   console.log("Migrations applied successfully.");
 }

@@ -1,3 +1,4 @@
+import { fileURLToPath } from "node:url";
 import { runMigrations } from "./migrate";
 import { skills } from "./schema";
 import { DEFAULT_DATABASE_URL, openSqliteDb, resolveFileUrl } from "./sqlite-utils";
@@ -93,7 +94,8 @@ export async function seed(databaseUrl?: string): Promise<void> {
   close();
 }
 
-// Allow running as a standalone script: `bun run packages/db/src/seed.ts`
-if (import.meta.main) {
+// Allow running as a standalone script: `tsx packages/db/src/seed.ts`
+const isMain = process.argv[1] === fileURLToPath(import.meta.url);
+if (isMain) {
   seed();
 }

@@ -25,7 +25,7 @@ uberSKILLS is an open-source web application that provides an integrated authori
 
 | Layer | Technology |
 |---|---|
-| Monorepo | Turborepo + Bun |
+| Monorepo | Turborepo + pnpm |
 | Framework | Next.js 15 (App Router) |
 | UI | shadcn/ui + Tailwind CSS v4 |
 | Database | SQLite + Drizzle ORM |
@@ -38,16 +38,21 @@ uberSKILLS is an open-source web application that provides an integrated authori
 
 ## Quickstart
 
+### Prerequisites
+
+- **Node.js** >= 20
+- **pnpm** — enable via `corepack enable` (ships with Node.js)
+
 ```bash
 # Clone the repository
 git clone https://github.com/hvasconcelos/uberskills.git
 cd uberskills
 
 # Install dependencies
-bun install
+pnpm install
 
 # Start the development server
-bun dev
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000). On first launch the app will automatically:
@@ -80,14 +85,14 @@ uberskills/
 
 | Command | Description |
 |---|---|
-| `bun dev` | Start the development server on port 3000 |
-| `bun build` | Build all packages and the web app for production |
-| `bun lint` | Run Biome linting across the entire monorepo |
-| `bun lint:fix` | Auto-fix lintable issues |
-| `bun format` | Format all files with Biome |
-| `bun test` | Run unit tests with Vitest across all packages |
-| `bun typecheck` | Run TypeScript type checking across all packages |
-| `bun db:migrate` | Run database migrations |
+| `pnpm dev` | Start the development server on port 3000 |
+| `pnpm build` | Build all packages and the web app for production |
+| `pnpm lint` | Run Biome linting across the entire monorepo |
+| `pnpm lint:fix` | Auto-fix lintable issues |
+| `pnpm format` | Format all files with Biome |
+| `pnpm test` | Run unit tests with Vitest across all packages |
+| `pnpm typecheck` | Run TypeScript type checking across all packages |
+| `pnpm db:migrate` | Run database migrations |
 
 ## Environment Variables
 

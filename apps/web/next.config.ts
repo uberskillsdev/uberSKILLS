@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 
 /** Native/Node-only packages that must not be bundled by webpack. */
 const DB_EXTERNALS =
-  /^(@libsql\/|libsql|better-sqlite3|bun:sqlite|drizzle-orm\/libsql|drizzle-orm\/bun-sqlite|drizzle-orm\/better-sqlite3)/;
+  /^(@libsql\/|libsql|better-sqlite3|drizzle-orm\/libsql|drizzle-orm\/better-sqlite3)/;
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -26,9 +26,7 @@ const nextConfig: NextConfig = {
   // biome-ignore lint/suspicious/noExplicitAny: webpack config types not available
   webpack: (config: any, { isServer }: { isServer: boolean }) => {
     if (isServer) {
-      // Bun's node_modules layout (node_modules/.bun/<pkg>@<ver>/) prevents
-      // Next.js serverExternalPackages from matching native database packages.
-      // This custom externals function catches them regardless of resolution path.
+      // Custom externals function to ensure native database packages are not bundled.
       const prev = config.externals;
       config.externals = [
         ...(Array.isArray(prev) ? prev : prev ? [prev] : []),

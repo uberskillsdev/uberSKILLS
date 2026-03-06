@@ -4,21 +4,21 @@ uberSKILLS is a local-first web application for creating, testing, and deploying
 
 ## Prerequisites
 
-- [Bun](https://bun.sh) v1.3.10 or later
-- [Node.js](https://nodejs.org) v18+ (for Next.js runtime)
+- [Node.js](https://nodejs.org) v20 or later
+- [pnpm](https://pnpm.io) — enable via `corepack enable` (ships with Node.js)
 
 ## Installation
 
 ```bash
 git clone https://github.com/hvasconcelos/uberskills.git
 cd uberskills
-bun install
+pnpm install
 ```
 
 ## Start the Development Server
 
 ```bash
-bun dev
+pnpm dev
 ```
 
 The app is now running at [http://localhost:3000](http://localhost:3000).
@@ -59,16 +59,16 @@ All environment variables are optional. Set them in `apps/web/.env.local`:
 ## Common Commands
 
 ```bash
-bun install          # Install all dependencies
-bun dev              # Start dev server (port 3000)
-bun build            # Production build
-bun lint             # Lint with Biome
-bun lint:fix         # Auto-fix lint issues
-bun format           # Format with Biome
-bun typecheck        # TypeScript type checking
-bun test             # Run unit tests (Vitest)
-bun run test:e2e     # Run E2E tests (Playwright)
-bun run db:migrate   # Run database migrations
+pnpm install          # Install all dependencies
+pnpm dev              # Start dev server (port 3000)
+pnpm build            # Production build
+pnpm lint             # Lint with Biome
+pnpm lint:fix         # Auto-fix lint issues
+pnpm format           # Format with Biome
+pnpm typecheck        # TypeScript type checking
+pnpm test             # Run unit tests (Vitest)
+pnpm run test:e2e     # Run E2E tests (Playwright)
+pnpm run db:migrate   # Run database migrations
 ```
 
 ## Next Steps

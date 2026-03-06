@@ -12,7 +12,7 @@ The core workflow: **Create** a skill (manually or via AI chat) → **Edit** met
 
 | Layer | Technology | Version |
 |---|---|---|
-| Monorepo | Turborepo + Bun | turbo ^2, bun 1.3.10 |
+| Monorepo | Turborepo + pnpm | turbo ^2, pnpm 9.15.4 |
 | Framework | Next.js (App Router) | ^15 |
 | UI | React + shadcn/ui + Tailwind CSS v4 | react ^19 |
 | Language | TypeScript (strict) | ^5.7 |
@@ -57,16 +57,16 @@ uberskills/
 ## Common Commands
 
 ```bash
-bun install          # Install all dependencies
-bun dev              # Start Next.js dev server (port 3000)
-bun build            # Production build all packages + app
-bun lint             # Lint all files with Biome
-bun lint:fix         # Auto-fix lintable issues
-bun format           # Format all files with Biome
-bun typecheck        # TypeScript type checking across all packages
-bun test             # Run Vitest unit tests
-bun run test:e2e     # Run Playwright E2E tests
-bun run db:migrate   # Run database migrations
+pnpm install          # Install all dependencies
+pnpm dev              # Start Next.js dev server (port 3000)
+pnpm build            # Production build all packages + app
+pnpm lint             # Lint all files with Biome
+pnpm lint:fix         # Auto-fix lintable issues
+pnpm format           # Format all files with Biome
+pnpm typecheck        # TypeScript type checking across all packages
+pnpm test             # Run Vitest unit tests
+pnpm run test:e2e     # Run Playwright E2E tests
+pnpm run db:migrate   # Run database migrations
 ```
 
 ## Coding Conventions
@@ -161,7 +161,7 @@ return NextResponse.json({ error: "Human-readable message", code: "ERROR_CODE" }
 ### shadcn/ui
 
 - Components live in `packages/ui/src/components/`.
-- Install via `bunx shadcn@latest add <component>` from the `packages/ui/` directory.
+- Install via `pnpm dlx shadcn@latest add <component>` from the `packages/ui/` directory.
 - Use the `cn()` utility from `@uberskills/ui` for conditional class merging (clsx + tailwind-merge).
 
 ### Design System ("Vercel Light" Theme)
@@ -267,7 +267,7 @@ return NextResponse.json({ error: "Human-readable message", code: "ERROR_CODE" }
 
 ## Docker Deployment
 
-- `Dockerfile` -- multi-stage build using `oven/bun:1` base image (deps → builder → runner stages).
+- `Dockerfile` -- multi-stage build using `node:20-alpine` base image (deps → builder → runner stages).
 - `docker-compose.yml` -- service definition with volume mount for `data/` persistence.
 - `.dockerignore` -- excludes `node_modules`, `.git`, `data/`, `.env*`.
 - Production runs as non-root user (`nextjs:nodejs`), exposes port 3000.

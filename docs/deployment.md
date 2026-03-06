@@ -63,8 +63,8 @@ For cloud deployment, SQLite is replaced with [Turso](https://turso.tech) (libSQ
 
 ```json
 {
-  "buildCommand": "bun run build",
-  "installCommand": "bun install",
+  "buildCommand": "pnpm run build",
+  "installCommand": "pnpm install",
   "framework": "nextjs",
   "outputDirectory": "apps/web/.next"
 }

@@ -30,7 +30,7 @@
 
 ## Dependencies
 
-- Lock file (`bun.lock`) is committed for reproducible builds.
+- Lock file (`pnpm-lock.yaml`) is committed for reproducible builds.
 - No native addons required -- pure JavaScript/TypeScript stack.
 
 ## No Authentication

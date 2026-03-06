@@ -23,8 +23,8 @@ Thumbs.db
 *.swp
 *.swo
 
-# Bun
-bun.lock
+# Package manager
+# pnpm-lock.yaml is committed for reproducible builds
 
 # Test coverage
 coverage/
