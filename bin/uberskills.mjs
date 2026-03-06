@@ -4,10 +4,10 @@
 // This script manages installation, upgrading, and launching of the uberSKILLS local server application.
 
 import { execSync, spawn } from "node:child_process";
+import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { randomBytes } from "node:crypto";
 
 // ---
 // Constants
