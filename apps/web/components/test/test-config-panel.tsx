@@ -185,8 +185,8 @@ export function TestConfigPanel({
                   {skill.fileCount > 0 && (
                     <>
                       {" "}
-                      {skill.fileCount} bundled file(s) will be appended with progressive
-                      disclosure (prompts inlined, large resources summarized).
+                      {skill.fileCount} bundled file(s) will be appended with progressive disclosure
+                      (prompts inlined, large resources summarized).
                     </>
                   )}
                 </DialogDescription>
