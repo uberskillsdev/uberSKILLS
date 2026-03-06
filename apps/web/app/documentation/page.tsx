@@ -18,7 +18,7 @@ export default function DocumentationPage() {
     <div className="space-y-8">
       <PageHeader
         title="Documentation"
-        description="Learn how to create, test, and deploy Claude Code Agent Skills with UberSkills."
+        description="Learn how to create, test, and deploy Claude Code Agent Skills with uberSKILLS."
       />
 
       {/* Overview */}
@@ -26,12 +26,12 @@ export default function DocumentationPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BookOpenIcon className="size-5" />
-            What is UberSkills?
+            What is uberSKILLS?
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3 text-sm text-muted-foreground">
           <p>
-            UberSkills is a local-first web application for designing, testing, and deploying{" "}
+            uberSKILLS is a local-first web application for designing, testing, and deploying{" "}
             <strong className="text-foreground">Claude Code Agent Skills</strong>. Skills are
             reusable instruction sets that extend Claude Code&apos;s capabilities for specific
             tasks.
@@ -181,7 +181,7 @@ export default function DocumentationPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-muted-foreground">
-            <p>Two ways to get your skills out of UberSkills:</p>
+            <p>Two ways to get your skills out of uberSKILLS:</p>
             <ul className="list-inside list-disc space-y-1">
               <li>
                 <strong className="text-foreground">Zip Export</strong> &mdash; Download as a{" "}
@@ -235,7 +235,7 @@ export default function DocumentationPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-muted-foreground">
-            <p>Configure your UberSkills instance:</p>
+            <p>Configure your uberSKILLS instance:</p>
             <ul className="list-inside list-disc space-y-1">
               <li>
                 <strong className="text-foreground">API Key</strong> &mdash; Enter your OpenRouter

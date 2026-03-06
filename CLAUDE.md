@@ -1,10 +1,10 @@
-# CLAUDE.md -- UberSkills
+# CLAUDE.md -- uberSKILLS
 
 > Context file for Claude Code when working on this codebase.
 
 ## Project Overview
 
-UberSkills is an open-source web application for designing, testing, and deploying Claude Code Agent Skills. It provides a visual editor with AI-assisted creation, a multi-model testing sandbox, and one-click deployment to `~/.claude/skills/`.
+uberSKILLS is an open-source web application for designing, testing, and deploying Claude Code Agent Skills. It provides a visual editor with AI-assisted creation, a multi-model testing sandbox, and one-click deployment to `~/.claude/skills/`.
 
 The core workflow: **Create** a skill (manually or via AI chat) → **Edit** metadata, instructions, and files → **Test** with streaming AI responses and metrics → **Export** as zip or **Deploy** to the local filesystem.
 
@@ -212,7 +212,7 @@ return NextResponse.json({ error: "Human-readable message", code: "ERROR_CODE" }
 - All AI calls go through OpenRouter via `@openrouter/ai-sdk-provider`.
 - API key stored encrypted (AES-256-GCM) in the `settings` table.
 - Server-side proxy routes decrypt the key -- never expose it to the client.
-- Set headers: `HTTP-Referer` and `X-Title: UberSkills` on all requests.
+- Set headers: `HTTP-Referer` and `X-Title: uberSKILLS` on all requests.
 
 ### Vercel AI SDK
 

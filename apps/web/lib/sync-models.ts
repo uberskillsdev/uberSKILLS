@@ -61,7 +61,7 @@ export async function fetchAndSyncModels(): Promise<number> {
     headers: {
       Authorization: `Bearer ${apiKey}`,
       "HTTP-Referer": "https://uberskills.dev",
-      "X-Title": "UberSkills",
+      "X-Title": "uberSKILLS",
     },
   });
 

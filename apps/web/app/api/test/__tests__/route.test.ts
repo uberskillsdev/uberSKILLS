@@ -295,7 +295,7 @@ describe("POST /api/test", () => {
       apiKey: "sk-or-v1-test",
       headers: {
         "HTTP-Referer": "https://uberskills.dev",
-        "X-Title": "UberSkills",
+        "X-Title": "uberSKILLS",
       },
     });
 

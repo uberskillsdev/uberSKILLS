@@ -26,7 +26,7 @@ export async function GET(): Promise<NextResponse> {
       headers: {
         Authorization: `Bearer ${apiKey}`,
         "HTTP-Referer": "https://uberskills.dev",
-        "X-Title": "UberSkills",
+        "X-Title": "uberSKILLS",
       },
     });
 

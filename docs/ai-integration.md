@@ -1,6 +1,6 @@
 # AI Integration
 
-UberSkills uses [OpenRouter](https://openrouter.ai) as its AI provider, accessed through the [Vercel AI SDK](https://sdk.vercel.ai) with the `@openrouter/ai-sdk-provider` bridge.
+uberSKILLS uses [OpenRouter](https://openrouter.ai) as its AI provider, accessed through the [Vercel AI SDK](https://sdk.vercel.ai) with the `@openrouter/ai-sdk-provider` bridge.
 
 ## Overview
 
@@ -41,7 +41,7 @@ All requests to OpenRouter include:
 
 ```
 HTTP-Referer: http://localhost:3000
-X-Title: UberSkills
+X-Title: uberSKILLS
 ```
 
 ## Vercel AI SDK

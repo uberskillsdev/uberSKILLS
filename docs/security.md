@@ -35,4 +35,4 @@
 
 ## No Authentication
 
-UberSkills is a single-user local development tool. There is no login, signup, or user management. If exposed to a network, use a reverse proxy with authentication.
+uberSKILLS is a single-user local development tool. There is no login, signup, or user management. If exposed to a network, use a reverse proxy with authentication.

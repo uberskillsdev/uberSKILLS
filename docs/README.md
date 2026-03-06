@@ -1,6 +1,6 @@
-# UberSkills Documentation
+# uberSKILLS Documentation
 
-Welcome to the UberSkills documentation. UberSkills is an open-source web application for designing, testing, and deploying [Claude Code Agent Skills](https://docs.anthropic.com/en/docs/claude-code/skills).
+Welcome to the uberSKILLS documentation. uberSKILLS is an open-source web application for designing, testing, and deploying [Claude Code Agent Skills](https://docs.anthropic.com/en/docs/claude-code/skills).
 
 ## For Users
 

@@ -77,13 +77,13 @@ export function AppSidebar() {
         <Link href="/" className="flex items-center gap-2 px-2 py-3">
           <Image
             src="/icon_original.png"
-            alt="UberSkills"
+            alt="uberSKILLS"
             width={28}
             height={28}
             className="shrink-0 rounded"
           />
           {!isCollapsed && (
-            <span className="truncate text-xl font-bold tracking-tight">UberSkills</span>
+            <span className="truncate text-xl font-bold tracking-tight">uberSKILLS</span>
           )}
         </Link>
       </SidebarHeader>

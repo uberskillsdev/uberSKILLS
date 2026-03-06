@@ -1,6 +1,6 @@
 # Database
 
-UberSkills uses SQLite accessed via Drizzle ORM. The database file is stored locally at `data/uberskills.db` (configurable via `DATABASE_URL`).
+uberSKILLS uses SQLite accessed via Drizzle ORM. The database file is stored locally at `data/uberskills.db` (configurable via `DATABASE_URL`).
 
 ## Connection
 

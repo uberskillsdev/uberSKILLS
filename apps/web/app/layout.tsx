@@ -7,7 +7,7 @@ import { AppLayout } from "@/components/app-layout";
 import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
-  title: "UberSkills",
+  title: "uberSKILLS",
   description: "Design, test, and deploy Claude Code Agent Skills",
   manifest: "/manifest.json",
 };

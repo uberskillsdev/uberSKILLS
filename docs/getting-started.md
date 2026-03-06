@@ -1,6 +1,6 @@
 # Getting Started
 
-UberSkills is a local-first web application for creating, testing, and deploying Claude Code Agent Skills. No signup, no external services required (except an AI provider for chat/testing features).
+uberSKILLS is a local-first web application for creating, testing, and deploying Claude Code Agent Skills. No signup, no external services required (except an AI provider for chat/testing features).
 
 ## Prerequisites
 
@@ -23,7 +23,7 @@ bun dev
 
 The app is now running at [http://localhost:3000](http://localhost:3000).
 
-On first launch, UberSkills will automatically:
+On first launch, uberSKILLS will automatically:
 
 1. Create the `data/` directory for the SQLite database.
 2. Run database migrations to initialize the schema.

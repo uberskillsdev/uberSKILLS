@@ -135,7 +135,7 @@ export async function POST(request: Request): Promise<Response> {
     apiKey,
     headers: {
       "HTTP-Referer": "https://uberskills.dev",
-      "X-Title": "UberSkills",
+      "X-Title": "uberSKILLS",
     },
   });
 

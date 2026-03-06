@@ -101,7 +101,7 @@ server {
 ```ini
 # /etc/systemd/system/uberskills.service
 [Unit]
-Description=UberSkills
+Description=uberSKILLS
 After=network.target
 
 [Service]

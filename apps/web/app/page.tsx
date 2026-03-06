@@ -33,7 +33,7 @@ export default function DashboardPage() {
     <div className="space-y-8">
       {/* Welcome section */}
       <section>
-        <h1 className="text-page-title tracking-tight">UberSkills</h1>
+        <h1 className="text-page-title tracking-tight">uberSKILLS</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           Design, test, and deploy Claude Code Agent Skills.
         </p>

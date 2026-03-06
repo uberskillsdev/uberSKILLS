@@ -1,17 +1,17 @@
-# UberSkills
+# uberSKILLS
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](LICENSE)
 [![Build](https://img.shields.io/github/actions/workflow/status/hvasconcelos/uberskills/ci.yml?branch=master)](https://github.com/hvasconcelos/uberskills/actions)
 
 **Design, test, and deploy Claude Code Agent Skills through a visual, AI-assisted workflow.**
 
-UberSkills replaces manual `SKILL.md` authoring with a structured editor, multi-model testing sandbox, and one-click deployment to `~/.claude/skills/`.
+uberSKILLS replaces manual `SKILL.md` authoring with a structured editor, multi-model testing sandbox, and one-click deployment to `~/.claude/skills/`.
 
-## What is UberSkills?
+## What is uberSKILLS?
 
 Creating [Claude Code Agent Skills](https://docs.anthropic.com/en/docs/claude-code/skills) today is entirely manual -- authors hand-write YAML frontmatter and markdown instructions, with no built-in way to preview, validate, or test a skill before deploying it.
 
-UberSkills is an open-source web application that provides an integrated authoring environment purpose-built for the Claude Code skill format:
+uberSKILLS is an open-source web application that provides an integrated authoring environment purpose-built for the Claude Code skill format:
 
 - **Skills Library** -- Browse, search, filter, and manage all your skills in one place
 - **AI-Assisted Creation** -- Describe what you want in natural language; get a complete SKILL.md draft

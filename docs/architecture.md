@@ -1,6 +1,6 @@
 # Architecture
 
-UberSkills is a Turborepo monorepo built with Bun, Next.js 15 (App Router), and SQLite.
+uberSKILLS is a Turborepo monorepo built with Bun, Next.js 15 (App Router), and SQLite.
 
 ## Monorepo Structure
 

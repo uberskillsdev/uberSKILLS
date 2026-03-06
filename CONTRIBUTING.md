@@ -1,6 +1,6 @@
-# Contributing to UberSkills
+# Contributing to uberSKILLS
 
-Thank you for your interest in contributing to UberSkills! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to uberSKILLS! This document provides guidelines and instructions for contributing.
 
 ## Getting Started
 

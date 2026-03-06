@@ -54,7 +54,7 @@ describe("GET /api/settings/test", () => {
         headers: expect.objectContaining({
           Authorization: "Bearer sk-or-v1-test",
           "HTTP-Referer": "https://uberskills.dev",
-          "X-Title": "UberSkills",
+          "X-Title": "uberSKILLS",
         }),
       }),
     );

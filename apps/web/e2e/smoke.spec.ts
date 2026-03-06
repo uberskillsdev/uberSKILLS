@@ -4,8 +4,8 @@ test.describe("smoke", () => {
   test("homepage loads and displays title", async ({ page }) => {
     await page.goto("/");
 
-    await expect(page).toHaveTitle("UberSkills");
-    await expect(page.getByRole("heading", { name: "UberSkills" })).toBeVisible();
+    await expect(page).toHaveTitle("uberSKILLS");
+    await expect(page.getByRole("heading", { name: "uberSKILLS" })).toBeVisible();
   });
 
   test("homepage displays description", async ({ page }) => {

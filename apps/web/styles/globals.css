@@ -3,7 +3,7 @@
 @source "../../../packages/ui/src";
 
 /*
- * UberSkills Design System — "Indigo Craft" Theme
+ * uberSKILLS Design System — "Indigo Craft" Theme
  *
  * Color tokens defined as CSS custom properties using oklch format.
  * Light mode on :root, dark mode on .dark class (Tailwind class strategy).
