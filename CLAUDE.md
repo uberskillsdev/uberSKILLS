@@ -18,6 +18,7 @@ The core workflow: **Create** a skill (manually or via AI chat) → **Edit** met
 | Language | TypeScript (strict) | ^5.7 |
 | Database | SQLite (better-sqlite3) / Turso (@libsql/client) via Drizzle ORM | -- |
 | AI | Vercel AI SDK + OpenRouter (@openrouter/ai-sdk-provider) | -- |
+| Logging | Pino + pino-pretty | pino ^10, pino-pretty ^13 |
 | Linting | Biome | ^2.4.5 |
 | Testing | Vitest (unit) + Playwright (E2E) | -- |
 | Fonts | Geist Sans + Geist Mono (via next/font) | -- |
@@ -219,6 +220,31 @@ return NextResponse.json({ error: "Human-readable message", code: "ERROR_CODE" }
 - Client: `useChat()` for chat UIs with streaming.
 - Response format: `result.toDataStreamResponse()`.
 
+## Logging
+
+### Pino
+
+- Logger singleton in `apps/web/lib/logger.ts` with ASCII startup banner.
+- `routeLogger(method, path)` factory returns a child logger with `{ route: "METHOD /path" }` pre-bound.
+- Use `.child({ skillId, fileId, testRunId })` for entity-scoped context in routes with URL params.
+- Log level controlled by `LOG_LEVEL` env var (default: `info`). In development, pino-pretty renders single-line colored output.
+- Production output is JSON (no pino-pretty transport).
+- Sensitive fields (`apiKey`, `openrouterApiKey`, `authorization`) are redacted via pino's `redact` config.
+
+### Log Level Conventions
+
+- `log.info` -- successful outcomes: "skill created", "models synced", "test run completed" + relevant IDs/counts/metrics.
+- `log.debug` -- request detail: query params, parsed body fields (non-sensitive), "stream initiated".
+- `log.warn` -- recoverable client errors: validation failures, not found, missing API key, rate limits.
+- `log.error({ err }, "message")` -- caught exceptions in catch blocks, streaming onError callbacks.
+
+### What Must Never Be Logged
+
+- API key values (redact config is safety net; primary defense is not passing them to the logger).
+- Settings PUT: log `updatedKeys` array only, never values.
+- Full system prompts (log `skillId` instead).
+- Authorization header values.
+
 ## Security Reminders
 
 - **Never** log or expose API keys in client-side code, error messages, or console output.
@@ -236,6 +262,7 @@ return NextResponse.json({ error: "Human-readable message", code: "ERROR_CODE" }
 | `DATABASE_URL` | `file:data/uberskills.db` | SQLite file path or Turso connection string |
 | `ENCRYPTION_SECRET` | Auto-generated at `data/.secret` | AES-256-GCM key for API key encryption |
 | `PORT` | `3000` | Web server port |
+| `LOG_LEVEL` | `info` | Pino log level (`debug`, `info`, `warn`, `error`, `fatal`, `silent`) |
 | `NODE_ENV` | `development` | Environment mode |
 
 ## Docker Deployment

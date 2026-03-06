@@ -1,7 +1,7 @@
 # UberSkills
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](LICENSE)
-[![Build](https://img.shields.io/github/actions/workflow/status/uberskills/uberskills/ci.yml?branch=main)](https://github.com/uberskills/uberskills/actions)
+[![Build](https://img.shields.io/github/actions/workflow/status/uberskills/uberskills/ci.yml?branch=master)](https://github.com/uberskills/uberskills/actions)
 
 **Design, test, and deploy Claude Code Agent Skills through a visual, AI-assisted workflow.**
 
@@ -31,6 +31,7 @@ UberSkills is an open-source web application that provides an integrated authori
 | Database | SQLite + Drizzle ORM |
 | AI SDK | Vercel AI SDK + OpenRouter provider |
 | AI Provider | OpenRouter (Claude, GPT, Gemini, Llama, etc.) |
+| Logging | Pino (JSON in production, pino-pretty in development) |
 | Language | TypeScript (strict) |
 | Testing | Vitest + Playwright |
 | Linting | Biome |
@@ -95,6 +96,7 @@ uberskills/
 | `DATABASE_URL` | No | `file:data/uberskills.db` | SQLite database file path |
 | `ENCRYPTION_SECRET` | No | Auto-generated | AES-256 key for encrypting the API key. Generated on first run at `data/.secret` if not set |
 | `PORT` | No | `3000` | Development server port |
+| `LOG_LEVEL` | No | `info` | Pino log level (`debug`, `info`, `warn`, `error`, `fatal`, `silent`) |
 | `NODE_ENV` | No | `development` | Environment mode |
 
 Set these in `apps/web/.env.local` (not committed to version control).

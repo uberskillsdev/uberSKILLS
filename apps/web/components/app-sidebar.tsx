@@ -62,6 +62,7 @@ export function AppSidebar() {
   const isCollapsed = state === "collapsed";
   const [skillCount, setSkillCount] = useState<number | null>(null);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: re-fetch skill count on navigation
   useEffect(() => {
     fetch("/api/skills?limit=1")
       .then((res) => res.json())
