@@ -14,8 +14,9 @@ export interface BuildSystemPromptOptions {
   /** Skill files (prompts and resources) to include. */
   files: SystemPromptFile[];
   /**
-   * Max lines before a resource file is summarized instead of inlined.
-   * Prompt files are always inlined regardless of size.
+   * Max lines before an unreferenced resource file is summarized instead of
+   * inlined. Prompt files and referenced resource files are always inlined
+   * regardless of size.
    * @default 100
    */
   resourceInlineThreshold?: number;
@@ -37,12 +38,36 @@ export interface BuildSystemPromptResult {
 }
 
 /**
+ * Check whether a file is referenced by path in the skill content.
+ *
+ * A file is considered "referenced" when its path (or filename) appears in
+ * the resolved skill content. This catches patterns like:
+ *   - "See resources/api-docs.md for details"
+ *   - "Follow the style guide in style-guide.md"
+ */
+export function isFileReferenced(resolvedContent: string, filePath: string): boolean {
+  // Check the full path first
+  if (resolvedContent.includes(filePath)) {
+    return true;
+  }
+  // Also check just the filename (last segment) for brevity references
+  const filename = filePath.split("/").pop();
+  if (filename && filename !== filePath && resolvedContent.includes(filename)) {
+    return true;
+  }
+  return false;
+}
+
+/**
  * Builds a test system prompt with progressive disclosure for skill files.
  *
  * Strategy:
  * - **Prompt files** (type: "prompt") are always inlined in full — these are
  *   core instructions/templates the AI needs to function.
- * - **Resource files** (type: "resource") use progressive disclosure:
+ * - **Referenced resource files** — resource files whose path or filename
+ *   appears in the skill content are always inlined in full, since the skill
+ *   explicitly depends on them.
+ * - **Unreferenced resource files** use progressive disclosure:
  *   - Small files (≤ threshold lines) are inlined in full.
  *   - Large files show a preview (first N lines) plus a summary noting
  *     the total line count and that the content was truncated.
@@ -74,8 +99,14 @@ export function buildTestSystemPrompt(options: BuildSystemPromptOptions): BuildS
   for (const file of orderedFiles) {
     const lines = file.content.split("\n");
     const totalLines = lines.length;
+
+    // Determine whether to inline or summarize:
+    // - Prompt files: always inline
+    // - Resource files referenced in content: always inline (the skill needs them)
+    // - Unreferenced resource files: inline if small, summarize if large
+    const referenced = file.type === "resource" && isFileReferenced(resolvedContent, file.path);
     const shouldSummarize =
-      file.type === "resource" && totalLines > resourceInlineThreshold;
+      file.type === "resource" && !referenced && totalLines > resourceInlineThreshold;
 
     if (shouldSummarize) {
       const preview = lines.slice(0, previewLines).join("\n");
