@@ -186,7 +186,7 @@ export default function DocumentationPage() {
               </li>
               <li>
                 <strong className="text-foreground">Deploy</strong> &mdash; One-click deploy to
-                Claude Code, OpenAI Codex, or OpenClaw.
+                Claude Code, OpenAI Codex, OpenClaw, or OpenCode.
               </li>
             </ul>
             <p>Both actions are available from the skill editor toolbar.</p>

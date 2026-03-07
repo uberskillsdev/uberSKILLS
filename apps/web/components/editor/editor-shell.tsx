@@ -593,12 +593,14 @@ export function EditorShell({ skill, files }: EditorShellProps) {
                 <SelectItem value="claude-code">Claude Code</SelectItem>
                 <SelectItem value="codex">OpenAI Codex</SelectItem>
                 <SelectItem value="openclaw">OpenClaw</SelectItem>
+                <SelectItem value="opencode">OpenCode</SelectItem>
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
               {deployTarget === "claude-code" && `~/.claude/skills/${skill.slug}/`}
               {deployTarget === "codex" && `~/.codex/skills/${skill.slug}/`}
               {deployTarget === "openclaw" && `~/.openclaw/skills/${skill.slug}/`}
+              {deployTarget === "opencode" && `~/.config/opencode/skills/${skill.slug}/`}
             </p>
           </div>
           <DialogFooter>

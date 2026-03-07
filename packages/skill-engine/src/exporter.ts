@@ -10,6 +10,7 @@ const SKILLS_ROOTS: Record<DeployTarget, string> = {
   "claude-code": join(homedir(), ".claude", "skills"),
   codex: join(homedir(), ".codex", "skills"),
   openclaw: join(homedir(), ".openclaw", "skills"),
+  opencode: join(homedir(), ".config", "opencode", "skills"),
 };
 
 /** Returns the skills root directory for a given deploy target. */

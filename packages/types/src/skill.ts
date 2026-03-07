@@ -2,7 +2,7 @@
 export type SkillStatus = "draft" | "ready" | "deployed";
 
 /** Supported deploy targets (code agents). */
-export type DeployTarget = "claude-code" | "codex" | "openclaw";
+export type DeployTarget = "claude-code" | "codex" | "openclaw" | "opencode";
 
 /** Classification of a file within a skill. */
 export type FileType = "script" | "reference";

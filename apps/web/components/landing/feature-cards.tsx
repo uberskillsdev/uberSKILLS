@@ -20,7 +20,7 @@ const features = [
     emoji: "\uD83D\uDE80",
     title: "One-Click Deploy",
     description:
-      "Deploy to Claude Code, OpenAI Codex, or OpenClaw with one click, or export as a zip to share with your team.",
+      "Deploy to Claude Code, OpenAI Codex, OpenClaw, or OpenCode with one click, or export as a zip to share with your team.",
   },
   {
     emoji: "\uD83D\uDD00",

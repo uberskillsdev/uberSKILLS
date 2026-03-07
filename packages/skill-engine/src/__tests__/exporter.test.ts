@@ -267,4 +267,18 @@ describe("deployToFilesystem", () => {
     // Clean up
     await rm(join(skillsRoot, "test-skill"), { recursive: true, force: true });
   });
+
+  it("deploys to opencode skills directory", async () => {
+    const skill = makeSkill();
+    const skillsRoot = join(homedir(), ".config", "opencode", "skills");
+    await mkdir(skillsRoot, { recursive: true });
+
+    const result = await deployToFilesystem(skill, [], "opencode");
+    expect(result).toBe(resolve(skillsRoot, "test-skill"));
+
+    expect(existsSync(join(result, "SKILL.md"))).toBe(true);
+
+    // Clean up
+    await rm(join(skillsRoot, "test-skill"), { recursive: true, force: true });
+  });
 });
