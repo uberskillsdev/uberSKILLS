@@ -28,7 +28,11 @@ const logger = pino({
     : {}),
 });
 
-console.log(BANNER);
+const globalForBanner = globalThis as unknown as { __uberskillsBannerShown?: boolean };
+if (!globalForBanner.__uberskillsBannerShown) {
+  globalForBanner.__uberskillsBannerShown = true;
+  console.log(BANNER);
+}
 
 export function routeLogger(method: string, path: string): pino.Logger {
   return logger.child({ route: `${method} ${path}` });
