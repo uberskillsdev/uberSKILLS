@@ -110,7 +110,7 @@ export function AppSidebar() {
                       </Link>
                     </SidebarMenuButton>
                     {href === "/skills" && skillCount !== null && (
-                      <SidebarMenuBadge className="flex size-5 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-600">
+                      <SidebarMenuBadge className="flex size-5 items-center justify-center rounded-full bg-muted text-xs font-medium text-muted-foreground">
                         {skillCount}
                       </SidebarMenuBadge>
                     )}
