@@ -2,6 +2,7 @@
 
 import {
   Button,
+  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -118,7 +119,48 @@ export function TestHistory({ skillId, refreshKey, onSelectRun }: TestHistoryPro
 
   if (isLoading) {
     return (
-      <div className="py-6 text-center text-sm text-muted-foreground">Loading test history...</div>
+      <div>
+        <Skeleton className="mb-3 h-5 w-28" />
+        <div className="overflow-x-auto rounded-lg border border-border">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-muted/50 hover:bg-muted/50">
+                <TableHead className="w-12">#</TableHead>
+                <TableHead>Model</TableHead>
+                <TableHead className="w-24 text-right">Tokens</TableHead>
+                <TableHead className="w-24 text-right">Latency</TableHead>
+                <TableHead className="w-16 text-center">Status</TableHead>
+                <TableHead className="w-28 text-right">Date</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array.from({ length: 3 }, (_, i) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton placeholders never reorder
+                <TableRow key={i}>
+                  <TableCell>
+                    <Skeleton className="h-4 w-6" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-32" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="ml-auto h-4 w-12" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="ml-auto h-4 w-10" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Skeleton className="mx-auto h-4 w-4" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="ml-auto h-4 w-14" />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
     );
   }
 

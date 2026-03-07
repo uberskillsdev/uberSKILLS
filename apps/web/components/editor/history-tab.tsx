@@ -1,7 +1,7 @@
 "use client";
 
-import { Badge, Button, Separator } from "@uberskills/ui";
-import { ChevronDown, ChevronRight, Clock, History, Loader2 } from "lucide-react";
+import { Badge, Button, Separator, Skeleton } from "@uberskills/ui";
+import { ChevronDown, ChevronRight, Clock, History } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -95,8 +95,26 @@ export function HistoryTab({ skillId }: HistoryTabProps) {
 
   if (loading) {
     return (
-      <div className="mx-auto flex max-w-2xl items-center justify-center py-12">
-        <Loader2 className="size-6 animate-spin text-muted-foreground" />
+      <div className="mx-auto max-w-3xl space-y-6">
+        <div>
+          <Skeleton className="h-6 w-36" />
+          <Skeleton className="mt-2 h-4 w-28" />
+        </div>
+        <div className="rounded-md border border-border">
+          {Array.from({ length: 5 }, (_, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: static skeleton placeholders never reorder
+            <div key={i}>
+              {i > 0 && <Separator />}
+              <div className="flex items-center gap-3 px-4 py-3">
+                <Skeleton className="size-4 shrink-0" />
+                <Skeleton className="h-4 w-10 font-mono" />
+                <Skeleton className="h-5 w-16 rounded-full" />
+                <Skeleton className="h-4 flex-1" />
+                <Skeleton className="h-3 w-20" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

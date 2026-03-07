@@ -26,6 +26,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   Separator,
+  Skeleton,
 } from "@uberskills/ui";
 import {
   Check,
@@ -341,9 +342,54 @@ export default function SettingsPage() {
     return (
       <div className="space-y-8">
         <PageHeader title="Settings" description="Manage your API configuration and preferences." />
+
+        {/* API Configuration skeleton */}
         <Card>
-          <CardContent className="flex items-center justify-center py-12">
-            <Loader2 className="size-6 animate-spin text-muted-foreground" />
+          <CardHeader>
+            <Skeleton className="h-6 w-40" />
+            <Skeleton className="h-4 w-72" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-10 w-full rounded-md" />
+          </CardContent>
+        </Card>
+
+        {/* Preferences skeleton */}
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-28" />
+            <Skeleton className="h-4 w-56" />
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-10 w-full rounded-md" />
+            </div>
+            <Separator />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-16" />
+              <div className="flex gap-2">
+                <Skeleton className="h-9 flex-1 rounded-md" />
+                <Skeleton className="h-9 flex-1 rounded-md" />
+                <Skeleton className="h-9 flex-1 rounded-md" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Data Management skeleton */}
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-36" />
+            <Skeleton className="h-4 w-52" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex gap-3">
+              <Skeleton className="h-10 w-36 rounded-md" />
+              <Skeleton className="h-10 w-40 rounded-md" />
+              <Skeleton className="h-10 w-36 rounded-md" />
+            </div>
           </CardContent>
         </Card>
       </div>
