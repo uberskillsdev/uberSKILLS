@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 export const metadata: Metadata = {
   title: "uberSKILLS",
-  description: "Design, test, and deploy Claude Code Agent Skills",
+  description: "Design, test, and deploy Agent Skills",
   manifest: "/manifest.json",
   icons: {
     icon: [

@@ -31,15 +31,15 @@ export function HeroSection() {
         >
           Design, Test, and Deploy
           <br />
-          Claude Code Skills
+          Agent Skills
         </h1>
 
         <p
           className="animate-fade-up stagger-3 mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl"
           style={{ textWrap: "balance" }}
         >
-          The visual workbench for building Claude Code Agent Skills. Create with AI assistance,
-          test across models, deploy with one click.
+          The visual workbench for building Agent Skills. Create with AI assistance, test across
+          models, deploy with one click.
         </p>
 
         <div className="animate-fade-up stagger-4 mt-10">

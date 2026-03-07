@@ -1,6 +1,9 @@
 /** Lifecycle status of a skill. */
 export type SkillStatus = "draft" | "ready" | "deployed";
 
+/** Supported deploy targets (code agents). */
+export type DeployTarget = "claude-code" | "codex" | "openclaw";
+
 /** Classification of a file within a skill. */
 export type FileType = "script" | "reference";
 

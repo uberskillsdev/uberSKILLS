@@ -1,17 +1,19 @@
 import { getSkillById, listFiles, updateSkill } from "@uberskills/db";
 import { deployToFilesystem } from "@uberskills/skill-engine/server";
-import type { Skill, SkillFile } from "@uberskills/types";
+import type { DeployTarget, Skill, SkillFile } from "@uberskills/types";
 import { NextResponse } from "next/server";
 
 import { routeLogger } from "@/lib/logger";
 
 const log = routeLogger("POST", "/api/export/deploy");
 
+const VALID_TARGETS = new Set<DeployTarget>(["claude-code", "codex", "openclaw"]);
+
 /**
  * POST /api/export/deploy -- Deploys a skill to the local filesystem.
  *
- * Body: `{ skillId: string }`
- * Writes the skill to `~/.claude/skills/<slug>/` and updates its status to "deployed".
+ * Body: `{ skillId: string, target?: DeployTarget }`
+ * Writes the skill to the target agent's skills directory and updates its status to "deployed".
  * Returns the deployed path on success.
  */
 export async function POST(request: Request): Promise<NextResponse> {
@@ -22,7 +24,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: "Invalid JSON body", code: "INVALID_JSON" }, { status: 400 });
   }
 
-  const { skillId } = body;
+  const { skillId, target: rawTarget } = body;
 
   if (typeof skillId !== "string" || skillId.trim().length === 0) {
     return NextResponse.json(
@@ -30,6 +32,11 @@ export async function POST(request: Request): Promise<NextResponse> {
       { status: 400 },
     );
   }
+
+  const target: DeployTarget =
+    typeof rawTarget === "string" && VALID_TARGETS.has(rawTarget as DeployTarget)
+      ? (rawTarget as DeployTarget)
+      : "claude-code";
 
   const skill = getSkillById(skillId);
   if (!skill) {
@@ -51,7 +58,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       type: f.type as SkillFile["type"],
     }));
 
-    const deployedPath = await deployToFilesystem(skillData, skillFiles);
+    const deployedPath = await deployToFilesystem(skillData, skillFiles, target);
 
     // Update skill status to "deployed"
     updateSkill(skillId, { status: "deployed" });

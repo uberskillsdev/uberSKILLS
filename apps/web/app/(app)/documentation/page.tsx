@@ -18,7 +18,7 @@ export default function DocumentationPage() {
     <div className="space-y-8">
       <PageHeader
         title="Documentation"
-        description="Learn how to create, test, and deploy Claude Code Agent Skills with uberSKILLS."
+        description="Learn how to create, test, and deploy Agent Skills with uberSKILLS."
       />
 
       {/* Overview */}
@@ -32,9 +32,8 @@ export default function DocumentationPage() {
         <CardContent className="space-y-3 text-sm text-muted-foreground">
           <p>
             uberSKILLS is a local-first web application for designing, testing, and deploying{" "}
-            <strong className="text-foreground">Claude Code Agent Skills</strong>. Skills are
-            reusable instruction sets that extend Claude Code&apos;s capabilities for specific
-            tasks.
+            <strong className="text-foreground">Agent Skills</strong>. Skills are reusable
+            instruction sets that extend code agents&apos; capabilities for specific tasks.
           </p>
           <p>
             The core workflow is simple: <strong className="text-foreground">Create</strong> a skill{" "}
@@ -77,11 +76,8 @@ export default function DocumentationPage() {
             </li>
             <li>
               <strong className="text-foreground">Deploy or export</strong> &mdash; Once satisfied,
-              deploy directly to{" "}
-              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
-                ~/.claude/skills/
-              </code>{" "}
-              or export as a zip file.
+              deploy directly to your agent&apos;s skills directory (Claude Code, OpenAI Codex, or
+              OpenClaw) or export as a zip file.
             </li>
           </ol>
         </CardContent>
@@ -189,12 +185,8 @@ export default function DocumentationPage() {
                 the standard skill directory structure.
               </li>
               <li>
-                <strong className="text-foreground">Deploy</strong> &mdash; One-click deploy writes
-                the skill directly to{" "}
-                <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs">
-                  ~/.claude/skills/
-                </code>
-                .
+                <strong className="text-foreground">Deploy</strong> &mdash; One-click deploy to
+                Claude Code, OpenAI Codex, or OpenClaw.
               </li>
             </ul>
             <p>Both actions are available from the skill editor toolbar.</p>

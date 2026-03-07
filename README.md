@@ -3,21 +3,21 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](LICENSE)
 [![Build](https://img.shields.io/github/actions/workflow/status/uberskillsdev/uberskills/ci.yml?branch=master)](https://github.com/uberskillsdev/uberskills/actions)
 
-**Design, test, and deploy Claude Code Agent Skills through a visual, AI-assisted workflow.**
+**Design, test, and deploy Agent Skills through a visual, AI-assisted workflow.**
 
-uberSKILLS replaces manual `SKILL.md` authoring with a structured editor, multi-model testing sandbox, and one-click deployment to `~/.claude/skills/`.
+uberSKILLS replaces manual `SKILL.md` authoring with a structured editor, multi-model testing sandbox, and one-click deployment to your agent's skills directory.
 
 ## What is uberSKILLS?
 
-Creating [Claude Code Agent Skills](https://docs.anthropic.com/en/docs/claude-code/skills) today is entirely manual -- authors hand-write YAML frontmatter and markdown instructions, with no built-in way to preview, validate, or test a skill before deploying it.
+Creating [Agent Skills](https://docs.anthropic.com/en/docs/claude-code/skills) today is entirely manual -- authors hand-write YAML frontmatter and markdown instructions, with no built-in way to preview, validate, or test a skill before deploying it.
 
-uberSKILLS is an open-source web application that provides an integrated authoring environment purpose-built for the Claude Code skill format:
+uberSKILLS is an open-source web application that provides an integrated authoring environment purpose-built for the SKILL.md format, with deploy support for Claude Code, OpenAI Codex, and OpenClaw:
 
 - **Skills Library** -- Browse, search, filter, and manage all your skills in one place
 - **AI-Assisted Creation** -- Describe what you want in natural language; get a complete SKILL.md draft
 - **Structured Editor** -- Edit metadata, instructions, and files with real-time validation and auto-save
 - **Multi-Model Testing** -- Test skills against any model on OpenRouter with streaming responses and metrics
-- **Export & Deploy** -- One-click deploy to `~/.claude/skills/` or export as zip
+- **Export & Deploy** -- One-click deploy to Claude Code, OpenAI Codex, or OpenClaw, or export as zip
 - **Import** -- Bulk-import existing skills from directories or zip archives
 - **Version History** -- Every change is versioned; browse and compare past versions
 

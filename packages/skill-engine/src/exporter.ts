@@ -1,12 +1,21 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
-import type { Skill, SkillFile } from "@uberskills/types";
+import type { DeployTarget, Skill, SkillFile } from "@uberskills/types";
 import archiver from "archiver";
 import { generateSkillMd } from "./generator";
 
-/** Default root directory for deployed skills. */
-const SKILLS_ROOT = join(homedir(), ".claude", "skills");
+/** Skills root directory per deploy target. */
+const SKILLS_ROOTS: Record<DeployTarget, string> = {
+  "claude-code": join(homedir(), ".claude", "skills"),
+  codex: join(homedir(), ".codex", "skills"),
+  openclaw: join(homedir(), ".openclaw", "skills"),
+};
+
+/** Returns the skills root directory for a given deploy target. */
+export function getSkillsRoot(target: DeployTarget): string {
+  return SKILLS_ROOTS[target];
+}
 
 /**
  * Generate a zip archive buffer containing a skill and its associated files.
@@ -50,26 +59,26 @@ export async function exportToZip(skill: Skill, files: SkillFile[]): Promise<Buf
 /**
  * Deploy a skill and its files to the local filesystem.
  *
- * Writes to `targetDir/<slug>/` (defaults to `~/.claude/skills/<slug>/`).
+ * Writes to the skills directory for the given deploy target (defaults to Claude Code).
  * Creates directories as needed and overwrites existing files.
  *
  * Returns the absolute path of the deployed skill directory.
  *
- * @throws if targetDir resolves outside `~/.claude/skills/` (path traversal prevention)
+ * @throws if the resolved path escapes the target's skills root (path traversal prevention)
  */
 export async function deployToFilesystem(
   skill: Skill,
   files: SkillFile[],
-  targetDir?: string,
+  target: DeployTarget = "claude-code",
 ): Promise<string> {
-  const root = targetDir ?? SKILLS_ROOT;
+  const root = SKILLS_ROOTS[target];
   const skillDir = resolve(root, skill.slug);
 
   // Path traversal guard: deployed directory must live within the skills root
-  const canonicalRoot = resolve(SKILLS_ROOT);
+  const canonicalRoot = resolve(root);
   const canonicalDir = resolve(skillDir);
   if (!canonicalDir.startsWith(`${canonicalRoot}/`) && canonicalDir !== canonicalRoot) {
-    throw new Error(`Path traversal detected: target must be within ${SKILLS_ROOT}`);
+    throw new Error(`Path traversal detected: target must be within ${root}`);
   }
 
   const skillMd = generateSkillMd(

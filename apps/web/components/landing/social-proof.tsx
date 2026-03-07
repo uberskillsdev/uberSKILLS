@@ -34,7 +34,7 @@ export function SocialProof() {
         </h2>
 
         <p className="mt-3 text-muted-foreground" style={{ textWrap: "balance" }}>
-          Open source, free forever. Join the community shaping the future of Claude Code.
+          Open source, free forever. Join the community shaping the future of Agent Skills.
         </p>
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">

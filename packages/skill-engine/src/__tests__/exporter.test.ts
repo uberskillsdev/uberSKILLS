@@ -142,9 +142,9 @@ describe("deployToFilesystem", () => {
     // ensure a clean target.
   });
 
-  it("rejects path traversal via targetDir", async () => {
-    const skill = makeSkill();
-    await expect(deployToFilesystem(skill, [], "/tmp/evil")).rejects.toThrow(
+  it("rejects path traversal via malicious slug", async () => {
+    const skill = makeSkill({ slug: "../../etc" });
+    await expect(deployToFilesystem(skill, [], "claude-code")).rejects.toThrow(
       "Path traversal detected",
     );
   });
@@ -163,8 +163,7 @@ describe("deployToFilesystem", () => {
       },
     ];
 
-    const skillsRoot = join(homedir(), ".claude", "skills");
-    await expect(deployToFilesystem(skill, maliciousFiles, skillsRoot)).rejects.toThrow(
+    await expect(deployToFilesystem(skill, maliciousFiles, "claude-code")).rejects.toThrow(
       "Path traversal detected",
     );
   });
@@ -176,7 +175,7 @@ describe("deployToFilesystem", () => {
     // Create the skills root so deployment can succeed
     await mkdir(skillsRoot, { recursive: true });
 
-    const result = await deployToFilesystem(skill, [], skillsRoot);
+    const result = await deployToFilesystem(skill, [], "claude-code");
     expect(result).toBe(resolve(skillsRoot, "test-skill"));
 
     // Clean up
@@ -188,7 +187,7 @@ describe("deployToFilesystem", () => {
     const skillsRoot = join(homedir(), ".claude", "skills");
     await mkdir(skillsRoot, { recursive: true });
 
-    const result = await deployToFilesystem(skill, makeFiles(), skillsRoot);
+    const result = await deployToFilesystem(skill, makeFiles(), "claude-code");
 
     // Verify SKILL.md exists and has expected content
     const skillMd = await readFile(join(result, "SKILL.md"), "utf-8");
@@ -213,11 +212,11 @@ describe("deployToFilesystem", () => {
     await mkdir(skillsRoot, { recursive: true });
 
     // Deploy once
-    await deployToFilesystem(skill, [], skillsRoot);
+    await deployToFilesystem(skill, [], "claude-code");
 
     // Deploy again with updated content
     const updatedSkill = makeSkill({ content: "# Updated Instructions\n\nNew content." });
-    await deployToFilesystem(updatedSkill, [], skillsRoot);
+    await deployToFilesystem(updatedSkill, [], "claude-code");
 
     const skillMd = await readFile(join(skillsRoot, "test-skill", "SKILL.md"), "utf-8");
     expect(skillMd).toContain("# Updated Instructions");
@@ -227,12 +226,40 @@ describe("deployToFilesystem", () => {
     await rm(join(skillsRoot, "test-skill"), { recursive: true, force: true });
   });
 
-  it("uses default target dir (~/.claude/skills/) when none provided", async () => {
+  it("defaults to claude-code target", async () => {
     const skill = makeSkill();
     const skillsRoot = join(homedir(), ".claude", "skills");
     await mkdir(skillsRoot, { recursive: true });
 
     const result = await deployToFilesystem(skill, []);
+    expect(result).toBe(resolve(skillsRoot, "test-skill"));
+
+    expect(existsSync(join(result, "SKILL.md"))).toBe(true);
+
+    // Clean up
+    await rm(join(skillsRoot, "test-skill"), { recursive: true, force: true });
+  });
+
+  it("deploys to codex skills directory", async () => {
+    const skill = makeSkill();
+    const skillsRoot = join(homedir(), ".codex", "skills");
+    await mkdir(skillsRoot, { recursive: true });
+
+    const result = await deployToFilesystem(skill, [], "codex");
+    expect(result).toBe(resolve(skillsRoot, "test-skill"));
+
+    expect(existsSync(join(result, "SKILL.md"))).toBe(true);
+
+    // Clean up
+    await rm(join(skillsRoot, "test-skill"), { recursive: true, force: true });
+  });
+
+  it("deploys to openclaw skills directory", async () => {
+    const skill = makeSkill();
+    const skillsRoot = join(homedir(), ".openclaw", "skills");
+    await mkdir(skillsRoot, { recursive: true });
+
+    const result = await deployToFilesystem(skill, [], "openclaw");
     expect(result).toBe(resolve(skillsRoot, "test-skill"));
 
     expect(existsSync(join(result, "SKILL.md"))).toBe(true);

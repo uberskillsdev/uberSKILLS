@@ -20,7 +20,7 @@ const features = [
     emoji: "\uD83D\uDE80",
     title: "One-Click Deploy",
     description:
-      "Deploy directly to ~/.claude/skills/ with one click, or export as a zip to share with your team.",
+      "Deploy to Claude Code, OpenAI Codex, or OpenClaw with one click, or export as a zip to share with your team.",
   },
   {
     emoji: "\uD83D\uDD00",
@@ -48,8 +48,7 @@ const features = [
   {
     emoji: "\u270F\uFE0F",
     title: "Structured Editor",
-    description:
-      "Edit metadata, instructions, and files with real-time validation and auto-save.",
+    description: "Edit metadata, instructions, and files with real-time validation and auto-save.",
   },
 ] as const;
 

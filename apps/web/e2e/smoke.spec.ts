@@ -11,8 +11,6 @@ test.describe("smoke", () => {
   test("homepage displays description", async ({ page }) => {
     await page.goto("/");
 
-    await expect(
-      page.getByText("Design, test, and deploy Claude Code Agent Skills."),
-    ).toBeVisible();
+    await expect(page.getByText("Design, test, and deploy Agent Skills.")).toBeVisible();
   });
 });

@@ -1,7 +1,7 @@
 {
   "name": "uberSKILLS",
   "short_name": "uberSKILLS",
-  "description": "Design, test, and deploy Claude Code Agent Skills",
+  "description": "Design, test, and deploy Agent Skills",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

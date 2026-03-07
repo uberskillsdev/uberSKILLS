@@ -19,7 +19,7 @@ const steps = [
     number: 3,
     title: "Deploy Instantly",
     description:
-      "One click deploys to your local Claude Code skills directory. Or export a zip to share.",
+      "One-click deploy to Claude Code, OpenAI Codex, or OpenClaw. Or export a zip to share.",
   },
 ] as const;
 

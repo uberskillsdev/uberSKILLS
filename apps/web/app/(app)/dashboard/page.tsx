@@ -34,9 +34,7 @@ export default function DashboardPage() {
       {/* Welcome section */}
       <section>
         <h1 className="text-page-title tracking-tight">uberSKILLS</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Design, test, and deploy Claude Code Agent Skills.
-        </p>
+        <p className="mt-2 text-sm text-muted-foreground">Design, test, and deploy Agent Skills.</p>
       </section>
 
       {/* Quick actions */}

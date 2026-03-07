@@ -1,6 +1,6 @@
 "use client";
 
-import type { SkillStatus } from "@uberskills/types";
+import type { DeployTarget, SkillStatus } from "@uberskills/types";
 import {
   Button,
   Dialog,
@@ -322,6 +322,12 @@ export function EditorShell({ skill, files }: EditorShellProps) {
     [status, skill.id, validation.isValid],
   );
 
+  // ------- Export / Deploy loading & confirmation state -------
+  const [exporting, setExporting] = useState(false);
+  const [deploying, setDeploying] = useState(false);
+  const [showDeployDialog, setShowDeployDialog] = useState(false);
+  const [deployTarget, setDeployTarget] = useState<DeployTarget>("claude-code");
+
   // ------- Export / Deploy -------
   const handleExport = useCallback(async () => {
     setExporting(true);
@@ -344,7 +350,10 @@ export function EditorShell({ skill, files }: EditorShellProps) {
   const handleDeployConfirm = useCallback(async () => {
     setDeploying(true);
     try {
-      const res = await apiFetch("/api/export/deploy", "POST", { skillId: skill.id });
+      const res = await apiFetch("/api/export/deploy", "POST", {
+        skillId: skill.id,
+        target: deployTarget,
+      });
       const data = (await res.json()) as { path: string };
       toast.success(`Deployed to ${data.path}`);
       setStatus("deployed");
@@ -355,12 +364,7 @@ export function EditorShell({ skill, files }: EditorShellProps) {
       setDeploying(false);
       setShowDeployDialog(false);
     }
-  }, [skill.id, router]);
-
-  // ------- Export / Deploy loading & confirmation state -------
-  const [exporting, setExporting] = useState(false);
-  const [deploying, setDeploying] = useState(false);
-  const [showDeployDialog, setShowDeployDialog] = useState(false);
+  }, [skill.id, router, deployTarget]);
 
   const hasValidationErrors = validation.errorCount > 0;
 
@@ -574,10 +578,29 @@ export function EditorShell({ skill, files }: EditorShellProps) {
           <DialogHeader>
             <DialogTitle>Deploy {workingName}?</DialogTitle>
             <DialogDescription>
-              Deploy to ~/.claude/skills/{skill.slug}/? This will overwrite any existing files in
-              that directory.
+              This will overwrite any existing files in the target directory.
             </DialogDescription>
           </DialogHeader>
+          <div className="space-y-2">
+            <label className="text-sm font-medium" htmlFor="deploy-target">
+              Deploy Target
+            </label>
+            <Select value={deployTarget} onValueChange={(v) => setDeployTarget(v as DeployTarget)}>
+              <SelectTrigger id="deploy-target" className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="claude-code">Claude Code</SelectItem>
+                <SelectItem value="codex">OpenAI Codex</SelectItem>
+                <SelectItem value="openclaw">OpenClaw</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              {deployTarget === "claude-code" && `~/.claude/skills/${skill.slug}/`}
+              {deployTarget === "codex" && `~/.codex/skills/${skill.slug}/`}
+              {deployTarget === "openclaw" && `~/.openclaw/skills/${skill.slug}/`}
+            </p>
+          </div>
           <DialogFooter>
             <Button
               variant="outline"
