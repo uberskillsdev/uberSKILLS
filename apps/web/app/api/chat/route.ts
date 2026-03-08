@@ -81,6 +81,7 @@ export async function POST(request: Request): Promise<Response> {
       model: openrouter(model),
       system: SKILL_CREATION_SYSTEM_PROMPT,
       messages: await convertToModelMessages(messages),
+      maxOutputTokens: 16384,
     });
 
     log.debug("stream initiated");
