@@ -2,9 +2,13 @@
 
 import { Badge, Button } from "@uberskills/ui";
 import { GithubIcon } from "lucide-react";
+import { useRef, useState } from "react";
 import { InstallCommand } from "./install-command";
 
 export function HeroSection() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [loaded, setLoaded] = useState(false);
+
   return (
     <section className="relative overflow-hidden py-20 md:py-32">
       {/* Dot grid background */}
@@ -59,12 +63,23 @@ export function HeroSection() {
         </div>
 
         <div
-          className="animate-fade-up mt-16 w-full max-w-4xl overflow-hidden rounded-xl border shadow-lg"
+          className="animate-fade-up relative mt-16 w-full max-w-4xl overflow-hidden rounded-xl border shadow-lg"
           style={{ animationDelay: "500ms" }}
         >
-          <div className="flex aspect-video items-center justify-center bg-muted">
-            <p className="text-sm text-muted-foreground">Demo video coming soon&hellip;</p>
-          </div>
+          {!loaded && (
+            <div className="aspect-video w-full animate-pulse bg-muted" aria-hidden="true" />
+          )}
+          <video
+            ref={videoRef}
+            className={`w-full ${loaded ? "" : "absolute inset-0 opacity-0"}`}
+            autoPlay
+            loop
+            muted
+            playsInline
+            onCanPlayThrough={() => setLoaded(true)}
+          >
+            <source src="/demo.mp4" type="video/mp4" />
+          </video>
         </div>
       </div>
     </section>
