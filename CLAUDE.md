@@ -28,18 +28,23 @@ The core workflow: **Create** a skill (manually or via AI chat) → **Edit** met
 ```
 uberskills/
 ├── apps/
-│   └── web/                    # Next.js 15 app (App Router)
-│       ├── app/                # Routes and API handlers
-│       ├── components/         # React components
-│       ├── e2e/                # Playwright E2E tests
-│       ├── hooks/              # Custom React hooks
-│       ├── lib/                # Utilities and constants
-│       └── styles/             # Global CSS with design tokens
+│   ├── web/                    # Next.js 15 — Skills editor app (port 3000)
+│   │   ├── app/                # Routes and API handlers (dashboard at /)
+│   │   ├── components/         # React components
+│   │   ├── e2e/                # Playwright E2E tests
+│   │   ├── lib/                # Utilities and constants
+│   │   └── styles/             # Global CSS (imports @uberskills/ui/globals.css)
+│   └── landing/                # Next.js 15 — Static landing page (port 3001)
+│       ├── app/                # Single-page layout + page
+│       ├── components/landing/ # Landing page sections
+│       ├── hooks/              # useInView hook
+│       ├── lib/                # Constants (EDITOR_URL)
+│       └── styles/             # Global CSS (imports @uberskills/ui/globals.css)
 ├── packages/
 │   ├── types/                  # @uberskills/types -- shared TypeScript interfaces
 │   ├── db/                     # @uberskills/db -- Drizzle schema, queries, crypto
 │   ├── skill-engine/           # @uberskills/skill-engine -- parser, validator, generator, importer, exporter
-│   └── ui/                     # @uberskills/ui -- shadcn/ui components
+│   └── ui/                     # @uberskills/ui -- shadcn/ui components, ThemeProvider, design tokens
 ├── docs/                       # Project documentation
 ├── Dockerfile                  # Multi-stage Docker build
 ├── docker-compose.yml          # Docker Compose service definition
@@ -52,14 +57,16 @@ uberskills/
 - **@uberskills/types**: All shared interfaces (`Skill`, `SkillFrontmatter`, `SkillFile`, `SkillVersion`, `TestRun`, `AppSettings`, `ValidationError`) and enum types (`SkillStatus`, `TestRunStatus`, `FileType`, `Theme`).
 - **@uberskills/db**: Drizzle ORM schema for 5 SQLite tables (`skills`, `skill_files`, `skill_versions`, `test_runs`, `settings`), typed query functions, database client with auto-migration, and AES-256-GCM encryption for API key storage.
 - **@uberskills/skill-engine**: SKILL.md parser (YAML frontmatter + markdown body), validator (field presence/length/regex), generator (data → SKILL.md string), argument substitution (`$VARIABLE_NAME` placeholders), importer (zip/directory → parsed skills), exporter (skill → zip/filesystem).
-- **@uberskills/ui**: Shared shadcn/ui components (Button, Input, Card, Dialog, Badge, etc.) with the "Vercel Light" design system tokens.
+- **@uberskills/ui**: Shared shadcn/ui components (Button, Input, Card, Dialog, Badge, etc.), `ThemeProvider`, and the full design system CSS (`globals.css` with color tokens, typography, animations).
 
 ## Common Commands
 
 ```bash
 pnpm install          # Install all dependencies
-pnpm dev              # Start Next.js dev server (port 3000)
-pnpm build            # Production build all packages + app
+pnpm dev              # Start all dev servers (web :3000, landing :3001)
+pnpm dev:web          # Start only the editor app (port 3000)
+pnpm dev:landing      # Start only the landing page (port 3001)
+pnpm build            # Production build all packages + apps
 pnpm lint             # Lint all files with Biome
 pnpm lint:fix         # Auto-fix lintable issues
 pnpm format           # Format all files with Biome
@@ -174,7 +181,7 @@ The uberSKILLS brand uses a minimal, monochromatic palette derived from the logo
 | Brand Gray (dark) | `#6A6A6A` | Logo/text on dark backgrounds |
 | Brand Gray (light) | `#B7B7B7` | Logo/text on light backgrounds |
 
-#### Brand Assets (`apps/web/public/`)
+#### Brand Assets (`apps/web/public/` and `apps/landing/public/`)
 
 | File | Description |
 |---|---|
@@ -189,7 +196,7 @@ The uberSKILLS brand uses a minimal, monochromatic palette derived from the logo
 
 ### Design System (Brand Theme)
 
-- Colors defined as CSS custom properties (oklch format) in `apps/web/styles/globals.css`.
+- Colors defined as CSS custom properties (oklch format) in `packages/ui/src/styles/globals.css` (shared). Each app imports via `@import "@uberskills/ui/globals.css"`.
 - Light mode tokens on `:root`, dark mode tokens on `.dark`.
 - Dark mode background maps to brand black `#171414` (`oklch(0.15 0.005 20)`) — the warm near-black hue (20°) is intentional and must be preserved.
 - Primary color in dark mode maps to brand gray `#6A6A6A` (`oklch(0.5 0 0)`).
@@ -289,6 +296,7 @@ The uberSKILLS brand uses a minimal, monochromatic palette derived from the logo
 | `PORT` | `3000` | Web server port |
 | `LOG_LEVEL` | `info` | Pino log level (`debug`, `info`, `warn`, `error`, `fatal`, `silent`) |
 | `NODE_ENV` | `development` | Environment mode |
+| `NEXT_PUBLIC_EDITOR_URL` | `/` | Landing app: URL to the editor app (cross-app links) |
 
 ## Docker Deployment
 

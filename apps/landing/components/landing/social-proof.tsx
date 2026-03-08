@@ -2,9 +2,9 @@
 
 import { Button } from "@uberskills/ui";
 import { GithubIcon, StarIcon } from "lucide-react";
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useInView } from "@/hooks/use-in-view";
+import { EDITOR_URL } from "@/lib/constants";
 
 export function SocialProof() {
   const [stars, setStars] = useState<number | null>(null);
@@ -39,7 +39,7 @@ export function SocialProof() {
 
         <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
           <Button size="lg" asChild>
-            <Link href="/dashboard">Open Dashboard</Link>
+            <a href={EDITOR_URL}>Open Dashboard</a>
           </Button>
           <Button size="lg" variant="outline" asChild>
             <a

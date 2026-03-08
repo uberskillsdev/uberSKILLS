@@ -34,7 +34,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const navItems = [
-  { href: "/dashboard", label: "Dashboard", icon: LayoutDashboardIcon },
+  { href: "/", label: "Dashboard", icon: LayoutDashboardIcon },
   { href: "/skills", label: "Skills", icon: LibraryIcon },
   { href: "/import", label: "Import", icon: UploadIcon },
   { href: "/documentation", label: "Documentation", icon: BookOpenIcon },
@@ -115,7 +115,10 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map(({ href, label, icon: Icon }) => {
-                const isActive = pathname === href || pathname.startsWith(`${href}/`);
+                const isActive =
+                  href === "/"
+                    ? pathname === "/"
+                    : pathname === href || pathname.startsWith(`${href}/`);
 
                 return (
                   <SidebarMenuItem key={href}>

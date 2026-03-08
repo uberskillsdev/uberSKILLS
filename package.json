@@ -24,6 +24,8 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter=@uberskills/web",
+    "dev:landing": "turbo run dev --filter=@uberskills/landing",
     "lint": "biome check .",
     "lint:fix": "biome check --fix .",
     "format": "biome format --write .",

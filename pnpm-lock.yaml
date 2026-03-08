@@ -31,6 +31,52 @@ importers:
         specifier: ^4.0.18
         version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.31.1)(tsx@4.21.0)(yaml@2.8.2)
 
+  apps/landing:
+    dependencies:
+      '@tailwindcss/postcss':
+        specifier: ^4.2.1
+        version: 4.2.1
+      '@tailwindcss/typography':
+        specifier: ^0.5.19
+        version: 0.5.19(tailwindcss@4.2.1)
+      '@uberskills/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      geist:
+        specifier: ^1.7.0
+        version: 1.7.0(next@15.5.12(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))
+      lucide-react:
+        specifier: ^0.577.0
+        version: 0.577.0(react@19.2.4)
+      next:
+        specifier: ^15
+        version: 15.5.12(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      next-themes:
+        specifier: ^0.4.6
+        version: 0.4.6(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: ^19
+        version: 19.2.4
+      react-dom:
+        specifier: ^19
+        version: 19.2.4(react@19.2.4)
+      tailwindcss:
+        specifier: ^4.2.1
+        version: 4.2.1
+    devDependencies:
+      '@types/node':
+        specifier: ^22
+        version: 22.19.15
+      '@types/react':
+        specifier: ^19
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19
+        version: 19.2.3(@types/react@19.2.14)
+      typescript:
+        specifier: ^5.7
+        version: 5.9.3
+
   apps/web:
     dependencies:
       '@ai-sdk/react':
@@ -2765,7 +2811,6 @@ packages:
 
   libsql@0.5.22:
     resolution: {integrity: sha512-NscWthMQt7fpU8lqd7LXMvT9pi+KhhmTHAJWUB/Lj6MWa0MKFv0F2V4C6WKKpjCVZl0VwcDz4nOI3CyaT1DDiA==}
-    cpu: [x64, arm64, wasm32, arm]
     os: [darwin, linux, win32]
 
   lightningcss-android-arm64@1.31.1:

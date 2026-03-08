@@ -94,12 +94,13 @@ No Docker, no Postgres, no signup required.
 ```
 uberskills/
 ├── apps/
-│   └── web/                 # Next.js 15 web application
+│   ├── web/                 # Next.js 15 — Skills editor app (port 3000)
+│   └── landing/             # Next.js 15 — Static landing page (port 3001)
 ├── packages/
 │   ├── types/               # Shared TypeScript interfaces
 │   ├── db/                  # Database schema, client, queries (Drizzle + SQLite)
 │   ├── skill-engine/        # SKILL.md parser, validator, generator, importer, exporter
-│   └── ui/                  # Shared UI components (shadcn/ui)
+│   └── ui/                  # Shared UI components, ThemeProvider, design tokens (shadcn/ui)
 ├── docs/                    # Project documentation
 ├── turbo.json               # Turborepo pipeline configuration
 ├── biome.json               # Linter and formatter configuration
@@ -110,8 +111,10 @@ uberskills/
 
 | Command | Description |
 |---|---|
-| `pnpm dev` | Start the development server on port 3000 |
-| `pnpm build` | Build all packages and the web app for production |
+| `pnpm dev` | Start all dev servers (web :3000, landing :3001) |
+| `pnpm dev:web` | Start only the editor app on port 3000 |
+| `pnpm dev:landing` | Start only the landing page on port 3001 |
+| `pnpm build` | Build all packages and apps for production |
 | `pnpm lint` | Run Biome linting across the entire monorepo |
 | `pnpm lint:fix` | Auto-fix lintable issues |
 | `pnpm format` | Format all files with Biome |
@@ -128,8 +131,9 @@ uberskills/
 | `PORT` | No | `3000` | Development server port |
 | `LOG_LEVEL` | No | `info` | Pino log level (`debug`, `info`, `warn`, `error`, `fatal`, `silent`) |
 | `NODE_ENV` | No | `development` | Environment mode |
+| `NEXT_PUBLIC_EDITOR_URL` | No | `/` | Landing app: URL to the editor app for cross-app links |
 
-Set these in `apps/web/.env.local` (not committed to version control).
+Set these in `apps/web/.env.local` or `apps/landing/.env.local` (not committed to version control).
 
 ## Detailed Documentation
 

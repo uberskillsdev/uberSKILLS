@@ -1,6 +1,7 @@
 import { Badge, Separator } from "@uberskills/ui";
 import { GithubIcon } from "lucide-react";
 import Image from "next/image";
+import { EDITOR_URL } from "@/lib/constants";
 
 export function LandingFooter() {
   return (
@@ -54,7 +55,7 @@ export function LandingFooter() {
                 </a>
               </li>
               <li>
-                <a href="/documentation" className="hover:text-foreground">
+                <a href={`${EDITOR_URL}/documentation`} className="hover:text-foreground">
                   Documentation
                 </a>
               </li>

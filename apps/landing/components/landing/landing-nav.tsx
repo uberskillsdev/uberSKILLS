@@ -5,6 +5,7 @@ import { ArrowRightIcon, GithubIcon, MoonIcon, SunIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useTheme } from "next-themes";
+import { EDITOR_URL } from "@/lib/constants";
 
 export function LandingNav() {
   const { resolvedTheme, setTheme } = useTheme();
@@ -52,10 +53,10 @@ export function LandingNav() {
             <MoonIcon className="hidden size-5 dark:block" aria-hidden="true" />
           </Button>
           <Button asChild className="ml-1">
-            <Link href="/dashboard">
+            <a href={EDITOR_URL}>
               Get Started
               <ArrowRightIcon className="size-3.5" aria-hidden="true" />
-            </Link>
+            </a>
           </Button>
         </div>
       </nav>

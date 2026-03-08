@@ -1,0 +1,371 @@
+@import "tailwindcss";
+
+/*
+ * uberSKILLS Design System — Brand Theme
+ *
+ * Color tokens defined as CSS custom properties using oklch format.
+ * Light mode on :root, dark mode on .dark class (Tailwind class strategy).
+ * Dark mode uses brand colors: #171414 (warm black) + #6A6A6A (medium gray).
+ * Semantic status colors for skill lifecycle states.
+ *
+ * Tailwind v4 @theme block maps CSS vars to utility classes
+ * (e.g. bg-background, text-foreground, border-input).
+ */
+
+/* ──────────────────────────────────────────────
+   Tailwind v4 Dark Mode — class-based strategy
+   Enables dark: variant via <html class="dark">
+   ────────────────────────────────────────────── */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ──────────────────────────────────────────────
+   Tailwind v4 Theme — maps CSS vars to utilities
+   ────────────────────────────────────────────── */
+@theme {
+  /* Colors — mapped from CSS custom properties.
+     Enables utilities like bg-background, text-primary, border-input, etc.
+     Using oklch or var() references so Tailwind can generate opacity modifiers. */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-input: var(--input);
+
+  /* Sidebar */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Border radius — var(--radius) defined in :root */
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Shadows — depth tokens for cards and interactive elements */
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-card: var(--shadow-card);
+
+  /* Font families — Geist loaded via next/font CSS variables */
+  --font-sans:
+    var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono:
+    var(--font-geist-mono), ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Liberation Mono", monospace;
+}
+
+/* ──────────────────────────────────────────────
+   Light Mode (Default)
+   ────────────────────────────────────────────── */
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.15 0.005 20);
+
+  --muted: oklch(0.965 0.003 20);
+  --muted-foreground: oklch(0.5 0 0);
+
+  --border: oklch(0.905 0 0);
+  --ring: oklch(0.15 0.005 20);
+
+  --primary: oklch(0.15 0.005 20);
+  --primary-foreground: oklch(1 0 0);
+
+  --secondary: oklch(0.965 0.003 20);
+  --secondary-foreground: oklch(0.15 0.005 20);
+
+  --accent: oklch(0.955 0.003 20);
+  --accent-foreground: oklch(0.5 0 0);
+
+  --destructive: oklch(0.577 0.245 27);
+  --destructive-foreground: oklch(0.985 0 0);
+
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0.005 20);
+
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0.005 20);
+
+  --input: oklch(0.905 0 0);
+
+  /* Semantic status colors */
+  --status-draft-bg: oklch(0.965 0.003 0);
+  --status-draft-text: oklch(0.5 0 0);
+  --status-ready-bg: oklch(0.925 0.084 155);
+  --status-ready-text: oklch(0.365 0.11 155);
+  --status-deployed-bg: oklch(0.94 0.04 277);
+  --status-deployed-text: oklch(0.43 0.185 277);
+  --status-error-bg: oklch(0.935 0.05 25);
+  --status-error-text: oklch(0.395 0.15 25);
+  --status-success-bg: oklch(0.925 0.084 155);
+  --status-success-text: oklch(0.365 0.11 155);
+
+  --radius: 0.5rem;
+
+  /* Shadow tokens */
+  --shadow-sm: 0 1px 2px oklch(0.4 0 0 / 0.06);
+  --shadow-md: 0 2px 6px oklch(0.4 0 0 / 0.08), 0 1px 2px oklch(0.4 0 0 / 0.04);
+  --shadow-lg: 0 8px 24px oklch(0.4 0 0 / 0.12), 0 2px 6px oklch(0.4 0 0 / 0.06);
+  --shadow-card: 0 1px 3px oklch(0.4 0 0 / 0.05), 0 1px 2px oklch(0.4 0 0 / 0.03);
+
+  /* Sidebar */
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.5 0 0);
+  --sidebar-primary: oklch(0.15 0.005 20);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.95 0 0);
+  --sidebar-accent-foreground: oklch(0.25 0 0);
+  --sidebar-border: oklch(0.905 0 0);
+  --sidebar-ring: oklch(0.15 0.005 20);
+}
+
+/* ──────────────────────────────────────────────
+   Dark Mode
+   ────────────────────────────────────────────── */
+.dark {
+  --background: oklch(0.15 0.005 20);
+  --foreground: oklch(0.96 0.005 0);
+
+  --muted: oklch(0.22 0.003 20);
+  --muted-foreground: oklch(0.5 0 0);
+
+  --border: oklch(0.3 0.003 20);
+  --ring: oklch(0.5 0 0);
+
+  --primary: oklch(0.5 0 0);
+  --primary-foreground: oklch(1 0 0);
+
+  --secondary: oklch(0.22 0.003 20);
+  --secondary-foreground: oklch(0.96 0.005 0);
+
+  --accent: oklch(0.28 0.003 20);
+  --accent-foreground: oklch(0.7 0 0);
+
+  --destructive: oklch(0.55 0.235 27);
+  --destructive-foreground: oklch(0.985 0 0);
+
+  --card: oklch(0.18 0.005 20);
+  --card-foreground: oklch(0.96 0.005 0);
+
+  --popover: oklch(0.2 0.005 20);
+  --popover-foreground: oklch(0.96 0.005 0);
+
+  --input: oklch(0.3 0.003 20);
+
+  /* Semantic status colors (dark mode) */
+  --status-draft-bg: oklch(0.24 0.003 0);
+  --status-draft-text: oklch(0.65 0 0);
+  --status-ready-bg: oklch(0.3 0.07 155);
+  --status-ready-text: oklch(0.85 0.1 155);
+  --status-deployed-bg: oklch(0.28 0.065 277);
+  --status-deployed-text: oklch(0.82 0.11 277);
+  --status-error-bg: oklch(0.26 0.07 25);
+  --status-error-text: oklch(0.87 0.08 25);
+  --status-success-bg: oklch(0.3 0.07 155);
+  --status-success-text: oklch(0.85 0.1 155);
+
+  /* Shadow tokens (dark mode) */
+  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.2);
+  --shadow-md: 0 2px 6px oklch(0 0 0 / 0.3), 0 1px 2px oklch(0 0 0 / 0.15);
+  --shadow-lg: 0 8px 24px oklch(0 0 0 / 0.4), 0 2px 6px oklch(0 0 0 / 0.2);
+  --shadow-card: 0 1px 3px oklch(0 0 0 / 0.15), 0 1px 2px oklch(0 0 0 / 0.08);
+
+  /* Sidebar (dark mode) */
+  --sidebar: oklch(0.15 0.005 20);
+  --sidebar-foreground: oklch(0.93 0.005 0);
+  --sidebar-primary: oklch(0.5 0 0);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.28 0.003 20);
+  --sidebar-accent-foreground: oklch(0.7 0 0);
+  --sidebar-border: oklch(0.25 0.003 20);
+  --sidebar-ring: oklch(0.5 0 0);
+}
+
+/* ──────────────────────────────────────────────
+   Base Styles
+   ────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  border-color: var(--border);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ──────────────────────────────────────────────
+   Typography Scale
+   Utility classes for the design system type ramp.
+   Geist Sans/Mono loaded via next/font variables.
+   ────────────────────────────────────────────── */
+
+/* Page title: 24px bold (e.g. "My Skills") */
+.text-page-title {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+}
+
+/* Section heading: 18px semibold (e.g. card headers) */
+.text-section-heading {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  font-weight: 600;
+}
+
+/* Body: 14px regular — default via Tailwind text-sm */
+
+/* Secondary text: 14px muted — use text-sm text-muted-foreground */
+
+/* Code/editor: 13px mono */
+.text-code {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+}
+
+/* Nav items: 14px medium — use text-sm font-medium */
+
+/* ──────────────────────────────────────────────
+   Default Transition
+   Interactive elements use a fast color transition.
+   ────────────────────────────────────────────── */
+a,
+button,
+[role="button"],
+input,
+select,
+textarea,
+[tabindex]:not([tabindex="-1"]) {
+  transition-property:
+    color, background-color, border-color, text-decoration-color, fill, stroke, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* ──────────────────────────────────────────────
+   Accessibility: Reduced Motion
+   Uses higher specificity via :where(:root) to
+   override animations without !important.
+   ────────────────────────────────────────────── */
+/* ──────────────────────────────────────────────
+   Scroll Animations
+   ────────────────────────────────────────────── */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Staggered animation delays for sequential reveals */
+.stagger-1 {
+  animation-delay: 0ms;
+}
+.stagger-2 {
+  animation-delay: 100ms;
+}
+.stagger-3 {
+  animation-delay: 200ms;
+}
+.stagger-4 {
+  animation-delay: 300ms;
+}
+.stagger-5 {
+  animation-delay: 400ms;
+}
+
+/* ──────────────────────────────────────────────
+   Landing Page — Dot Grid Background
+   Pixel-art aesthetic matching the brand logo.
+   ────────────────────────────────────────────── */
+.dot-grid {
+  background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ──────────────────────────────────────────────
+   Landing Page — Terminal Cursor Blink
+   ────────────────────────────────────────────── */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.animate-blink {
+  animation: blink 1.1s step-end infinite;
+}
+
+/* ──────────────────────────────────────────────
+   Landing Page — Card Hover Lift
+   ────────────────────────────────────────────── */
+.card-hover {
+  transition-property: transform, box-shadow;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  transition-duration: 300ms;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ──────────────────────────────────────────────
+   Touch Optimization
+   ────────────────────────────────────────────── */
+a,
+button,
+[role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(:root) *,
+  :where(:root) *::before,
+  :where(:root) *::after {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
+  }
+}

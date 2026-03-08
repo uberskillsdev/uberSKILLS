@@ -2,7 +2,7 @@
 
 import { Badge, Button } from "@uberskills/ui";
 import { ArrowRightIcon, GithubIcon } from "lucide-react";
-import Link from "next/link";
+import { EDITOR_URL } from "@/lib/constants";
 import { InstallCommand } from "./install-command";
 
 export function HeroSection() {
@@ -48,10 +48,10 @@ export function HeroSection() {
 
         <div className="animate-fade-up stagger-5 mt-8 flex flex-wrap items-center justify-center gap-4">
           <Button size="lg" asChild>
-            <Link href="/dashboard">
+            <a href={EDITOR_URL}>
               Open Dashboard
               <ArrowRightIcon className="size-4" aria-hidden="true" />
-            </Link>
+            </a>
           </Button>
           <Button size="lg" variant="outline" asChild>
             <a

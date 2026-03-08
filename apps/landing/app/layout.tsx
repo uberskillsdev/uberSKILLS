@@ -2,11 +2,11 @@ import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
 import "@/styles/globals.css";
-import { ThemeProvider, Toaster } from "@uberskills/ui";
+import { ThemeProvider } from "@uberskills/ui";
 
 export const metadata: Metadata = {
   title: "uberSKILLS",
-  description: "Design, test, and deploy Agent Skills ✨",
+  description: "Design, test, and deploy Agent Skills",
   manifest: "/manifest.json",
   icons: {
     icon: [
@@ -30,10 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-background font-sans antialiased">
-        <ThemeProvider>
-          {children}
-          <Toaster />
-        </ThemeProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

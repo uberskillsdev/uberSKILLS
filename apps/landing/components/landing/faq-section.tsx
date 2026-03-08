@@ -1,8 +1,8 @@
 "use client";
 
-import { useInView } from "@/hooks/use-in-view";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { useInView } from "@/hooks/use-in-view";
 
 const faqs = [
   {

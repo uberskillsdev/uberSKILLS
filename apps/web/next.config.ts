@@ -6,6 +6,7 @@ const DB_EXTERNALS =
   /^(@libsql\/|libsql|better-sqlite3|drizzle-orm\/libsql|drizzle-orm\/better-sqlite3)/;
 
 const nextConfig: NextConfig = {
+  redirects: async () => [{ source: "/dashboard", destination: "/", permanent: true }],
   output: "standalone",
   outputFileTracingRoot: path.join(__dirname, "../../"),
   transpilePackages: [

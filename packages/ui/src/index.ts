@@ -119,6 +119,8 @@ export {
 } from "./components/table";
 export { Tabs, TabsContent, TabsList, TabsTrigger, tabsListVariants } from "./components/tabs";
 export { Textarea } from "./components/textarea";
+// Providers
+export { ThemeProvider } from "./components/theme-provider";
 export { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./components/tooltip";
 // Utilities
 export { cn } from "./lib/utils";
