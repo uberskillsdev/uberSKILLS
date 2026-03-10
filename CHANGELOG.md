@@ -5,6 +5,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.6] - 2026-03-10
+
+### Added
+
+- **Landing Page**
+  - Separated landing page into standalone app (`apps/landing/`)
+  - FAQ section
+  - Feature cards: Skills Library, Structured Editor, Import & Share, Version History, SKILL.md Standard
+  - Demo video in hero section with poster image for faster perceived loading
+  - Agent Skills Standard link in README and landing footer
+
+- **UI**
+  - Welcome modal with OpenRouter API key setup video for first-time users (cookie-based, shows once)
+  - Consistent skeleton loaders across all pages
+  - Sidebar icon visible when collapsed
+
+- **Deployment**
+  - Multi-agent deploy target selector (Claude Code, OpenCode)
+  - Separate Dockerfiles for web and landing apps
+  - Railway deployment config for web and landing apps
+
+- **Documentation**
+  - Brand identity and color palette added to CLAUDE.md
+
+### Changed
+
+- Rebranded to "Agent Skills" with multi-agent deploy target support
+- Replaced lucide icons with emojis on landing page feature cards
+- Landing page feature cards use 4-column grid layout
+- Removed dead portal links from landing page
+- Simplified logger transport configuration
+
+### Fixed
+
+- Deferred skill preview parsing until stream completes to prevent partial render
+- Prevented AI skill creation output from being truncated
+- Resolved lint issues in chat-panel formatting and dependencies
+- Used brand colors for feature card icons instead of colored variants
+
 ## [0.9.5] - 2026-03-07
 
 ### Changed
@@ -180,6 +219,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Consistent padding on instructions tab content
 - Tab content max-width adjusted for balanced padding
 
+[0.9.6]: https://github.com/uberskillsdev/uberskills/releases/tag/v0.9.6
 [0.9.5]: https://github.com/uberskillsdev/uberskills/releases/tag/v0.9.5
 [0.9.4]: https://github.com/uberskillsdev/uberskills/releases/tag/v0.9.4
 [0.9.3]: https://github.com/uberskillsdev/uberskills/releases/tag/v0.9.3
