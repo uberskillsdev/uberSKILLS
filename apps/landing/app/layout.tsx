@@ -8,7 +8,7 @@ import { ThemeProvider } from "@uberskills/ui";
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://uberskills.dev";
 const title = "uberSKILLS — Design, Test, and Deploy Agent Skills";
 const description =
-  "Open-source visual workbench for building Agent Skills. Create with AI, test across models, and deploy to Claude Code, Codex, and more with one click.";
+  "Open-source visual workbench for building Agent Skills. Create with AI, test across models, and deploy to Claude Code, GitHub Copilot, Cursor, Windsurf, and more with one click.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

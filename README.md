@@ -11,13 +11,13 @@ uberSKILLS replaces manual `SKILL.md` authoring with a structured editor, multi-
 
 Creating [Agent Skills](https://agentskills.io/) today is entirely manual -- authors hand-write YAML frontmatter and markdown instructions, with no built-in way to preview, validate, or test a skill before deploying it.
 
-uberSKILLS is an open-source web application that provides an integrated authoring environment purpose-built for the SKILL.md format, with deploy support for Claude Code, OpenAI Codex, OpenClaw, and OpenCode:
+uberSKILLS is an open-source web application that provides an integrated authoring environment purpose-built for the SKILL.md format, with deploy support for Antigravity, Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode, and Windsurf:
 
 - **Skills Library** -- Browse, search, filter, and manage all your skills in one place
 - **AI-Assisted Creation** -- Describe what you want in natural language; get a complete SKILL.md draft
 - **Structured Editor** -- Edit metadata, instructions, and files with real-time validation and auto-save
 - **Multi-Model Testing** -- Test skills against any model on OpenRouter with streaming responses and metrics
-- **Export & Deploy** -- One-click deploy to Claude Code, OpenAI Codex, OpenClaw, or OpenCode, or export as zip
+- **Export & Deploy** -- One-click deploy to 8 agent tools including Claude Code, GitHub Copilot, Cursor, and Windsurf, or export as zip
 - **Import** -- Bulk-import existing skills from directories or zip archives
 - **Version History** -- Every change is versioned; browse and compare past versions
 

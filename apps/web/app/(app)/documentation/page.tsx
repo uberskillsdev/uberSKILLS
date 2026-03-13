@@ -76,8 +76,8 @@ export default function DocumentationPage() {
             </li>
             <li>
               <strong className="text-foreground">Deploy or export</strong> &mdash; Once satisfied,
-              deploy directly to your agent&apos;s skills directory (Claude Code, OpenAI Codex, or
-              OpenClaw) or export as a zip file.
+              deploy directly to your agent&apos;s skills directory (Claude Code, GitHub Copilot,
+              Cursor, Windsurf, and more) or export as a zip file.
             </li>
           </ol>
         </CardContent>
@@ -186,7 +186,8 @@ export default function DocumentationPage() {
               </li>
               <li>
                 <strong className="text-foreground">Deploy</strong> &mdash; One-click deploy to
-                Claude Code, OpenAI Codex, OpenClaw, or OpenCode.
+                Antigravity, Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot,
+                OpenCode, and Windsurf.
               </li>
             </ul>
             <p>Both actions are available from the skill editor toolbar.</p>

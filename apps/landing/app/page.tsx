@@ -16,7 +16,7 @@ const jsonLd = {
       name: "uberSKILLS",
       url: SITE_URL,
       description:
-        "Open-source visual workbench for building Agent Skills. Create with AI, test across models, and deploy to Claude Code, Codex, and more with one click.",
+        "Open-source visual workbench for building Agent Skills. Create with AI, test across models, and deploy to Claude Code, GitHub Copilot, Cursor, Windsurf, and more with one click.",
     },
     {
       "@type": "SoftwareApplication",
@@ -59,7 +59,7 @@ const jsonLd = {
           name: "Which code agents does uberSKILLS support?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "uberSKILLS supports deploying skills to Claude Code, OpenAI Codex, OpenClaw, and OpenCode. Skills are exported in standard SKILL.md format, so they can also be adapted for other agents that support markdown-based instructions.",
+            text: "uberSKILLS supports deploying skills to Antigravity, Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode, and Windsurf. Skills are exported in standard SKILL.md format, so they can also be adapted for other agents that support markdown-based instructions.",
           },
         },
         {

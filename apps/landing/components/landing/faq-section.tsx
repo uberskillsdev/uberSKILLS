@@ -18,7 +18,7 @@ const faqs = [
   {
     question: "Which code agents does uberSKILLS support?",
     answer:
-      "uberSKILLS supports deploying skills to Claude Code, OpenAI Codex, OpenClaw, and OpenCode. Skills are exported in standard SKILL.md format, so they can also be adapted for other agents that support markdown-based instructions.",
+      "uberSKILLS supports deploying skills to Antigravity, Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode, and Windsurf. Skills are exported in standard SKILL.md format, so they can also be adapted for other agents that support markdown-based instructions.",
   },
   {
     question: "Do I need an API key to use uberSKILLS?",
