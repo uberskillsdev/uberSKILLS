@@ -186,8 +186,8 @@ export default function DocumentationPage() {
               </li>
               <li>
                 <strong className="text-foreground">Deploy</strong> &mdash; One-click deploy to
-                Antigravity, Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot,
-                OpenCode, and Windsurf.
+                Antigravity, Claude Code, Codex, Cursor, Gemini CLI, GitHub Copilot, OpenCode, and
+                Windsurf.
               </li>
             </ul>
             <p>Both actions are available from the skill editor toolbar.</p>
