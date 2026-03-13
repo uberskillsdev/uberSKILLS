@@ -4,7 +4,7 @@ import { Button } from "@uberskills/ui";
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { useState } from "react";
 
-const COMMAND = "npx uberskills";
+const COMMAND = "npx @uberskillsdev/uberskills";
 
 export function InstallCommand() {
   const [copied, setCopied] = useState(false);

@@ -41,7 +41,7 @@ uberSKILLS is an open-source web application that provides an integrated authori
 Run uberSKILLS with a single command — no cloning, no setup:
 
 ```bash
-npx uberskills
+npx @uberskillsdev/uberskills
 ```
 
 That's it. On first run it will automatically set up everything (~2 minutes), then start the server at [http://localhost:3000](http://localhost:3000).

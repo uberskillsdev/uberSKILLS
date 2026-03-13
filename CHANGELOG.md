@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.7] - 2026-03-13
+
+### Added
+
+- **Landing Page SEO**
+  - OpenGraph meta tags, sitemap, and robots.txt for landing page
+  - JSON-LD structured data for improved search engine visibility
+  - Umami analytics integration for privacy-friendly usage tracking
+
+### Changed
+
+- Updated `npx` install command to scoped package name `npx @uberskillsdev/uberskills` across README, landing page, and CHANGELOG
+
+### Fixed
+
+- Resolved Biome lint errors in landing page JSON-LD structured data
+- Corrected CLI entry point command in CHANGELOG v0.9.1 to match scoped package name
+
 ## [0.9.6] - 2026-03-10
 
 ### Added
@@ -94,7 +112,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - **CLI Entry Point**
-  - `npx uberskills` command for running the app directly (#62)
+  - `npx @uberskillsdev/uberskills` command for running the app directly (#62)
 
 - **Documentation**
   - Documentation page with usage guide
@@ -219,6 +237,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Consistent padding on instructions tab content
 - Tab content max-width adjusted for balanced padding
 
+[0.9.7]: https://github.com/uberskillsdev/uberskills/releases/tag/v0.9.7
 [0.9.6]: https://github.com/uberskillsdev/uberskills/releases/tag/v0.9.6
 [0.9.5]: https://github.com/uberskillsdev/uberskills/releases/tag/v0.9.5
 [0.9.4]: https://github.com/uberskillsdev/uberskills/releases/tag/v0.9.4
