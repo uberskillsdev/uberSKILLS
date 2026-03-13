@@ -242,7 +242,7 @@ describe("deployToFilesystem", () => {
 
   it("deploys to codex skills directory", async () => {
     const skill = makeSkill();
-    const skillsRoot = join(homedir(), ".codex", "skills");
+    const skillsRoot = join(homedir(), ".agents", "skills");
     await mkdir(skillsRoot, { recursive: true });
 
     const result = await deployToFilesystem(skill, [], "codex");
@@ -254,12 +254,54 @@ describe("deployToFilesystem", () => {
     await rm(join(skillsRoot, "test-skill"), { recursive: true, force: true });
   });
 
-  it("deploys to openclaw skills directory", async () => {
+  it("deploys to antigravity skills directory", async () => {
     const skill = makeSkill();
-    const skillsRoot = join(homedir(), ".openclaw", "skills");
+    const skillsRoot = join(homedir(), ".gemini", "antigravity", "skills");
     await mkdir(skillsRoot, { recursive: true });
 
-    const result = await deployToFilesystem(skill, [], "openclaw");
+    const result = await deployToFilesystem(skill, [], "antigravity");
+    expect(result).toBe(resolve(skillsRoot, "test-skill"));
+
+    expect(existsSync(join(result, "SKILL.md"))).toBe(true);
+
+    // Clean up
+    await rm(join(skillsRoot, "test-skill"), { recursive: true, force: true });
+  });
+
+  it("deploys to cursor skills directory", async () => {
+    const skill = makeSkill();
+    const skillsRoot = join(homedir(), ".cursor", "skills");
+    await mkdir(skillsRoot, { recursive: true });
+
+    const result = await deployToFilesystem(skill, [], "cursor");
+    expect(result).toBe(resolve(skillsRoot, "test-skill"));
+
+    expect(existsSync(join(result, "SKILL.md"))).toBe(true);
+
+    // Clean up
+    await rm(join(skillsRoot, "test-skill"), { recursive: true, force: true });
+  });
+
+  it("deploys to gemini-cli skills directory", async () => {
+    const skill = makeSkill();
+    const skillsRoot = join(homedir(), ".gemini", "skills");
+    await mkdir(skillsRoot, { recursive: true });
+
+    const result = await deployToFilesystem(skill, [], "gemini-cli");
+    expect(result).toBe(resolve(skillsRoot, "test-skill"));
+
+    expect(existsSync(join(result, "SKILL.md"))).toBe(true);
+
+    // Clean up
+    await rm(join(skillsRoot, "test-skill"), { recursive: true, force: true });
+  });
+
+  it("deploys to github-copilot skills directory", async () => {
+    const skill = makeSkill();
+    const skillsRoot = join(homedir(), ".copilot", "skills");
+    await mkdir(skillsRoot, { recursive: true });
+
+    const result = await deployToFilesystem(skill, [], "github-copilot");
     expect(result).toBe(resolve(skillsRoot, "test-skill"));
 
     expect(existsSync(join(result, "SKILL.md"))).toBe(true);
@@ -274,6 +316,20 @@ describe("deployToFilesystem", () => {
     await mkdir(skillsRoot, { recursive: true });
 
     const result = await deployToFilesystem(skill, [], "opencode");
+    expect(result).toBe(resolve(skillsRoot, "test-skill"));
+
+    expect(existsSync(join(result, "SKILL.md"))).toBe(true);
+
+    // Clean up
+    await rm(join(skillsRoot, "test-skill"), { recursive: true, force: true });
+  });
+
+  it("deploys to windsurf skills directory", async () => {
+    const skill = makeSkill();
+    const skillsRoot = join(homedir(), ".codeium", "windsurf", "skills");
+    await mkdir(skillsRoot, { recursive: true });
+
+    const result = await deployToFilesystem(skill, [], "windsurf");
     expect(result).toBe(resolve(skillsRoot, "test-skill"));
 
     expect(existsSync(join(result, "SKILL.md"))).toBe(true);

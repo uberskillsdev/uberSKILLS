@@ -7,7 +7,16 @@ import { routeLogger } from "@/lib/logger";
 
 const log = routeLogger("POST", "/api/export/deploy");
 
-const VALID_TARGETS = new Set<DeployTarget>(["claude-code", "codex", "openclaw", "opencode"]);
+const VALID_TARGETS = new Set<DeployTarget>([
+  "antigravity",
+  "claude-code",
+  "codex",
+  "cursor",
+  "gemini-cli",
+  "github-copilot",
+  "opencode",
+  "windsurf",
+]);
 
 /**
  * POST /api/export/deploy -- Deploys a skill to the local filesystem.

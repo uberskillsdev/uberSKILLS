@@ -2,7 +2,15 @@
 export type SkillStatus = "draft" | "ready" | "deployed";
 
 /** Supported deploy targets (code agents). */
-export type DeployTarget = "claude-code" | "codex" | "openclaw" | "opencode";
+export type DeployTarget =
+  | "antigravity"
+  | "claude-code"
+  | "codex"
+  | "cursor"
+  | "gemini-cli"
+  | "github-copilot"
+  | "opencode"
+  | "windsurf";
 
 /** Classification of a file within a skill. */
 export type FileType = "script" | "reference";

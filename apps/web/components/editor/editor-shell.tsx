@@ -590,17 +590,25 @@ export function EditorShell({ skill, files }: EditorShellProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="antigravity">Antigravity</SelectItem>
                 <SelectItem value="claude-code">Claude Code</SelectItem>
-                <SelectItem value="codex">OpenAI Codex</SelectItem>
-                <SelectItem value="openclaw">OpenClaw</SelectItem>
+                <SelectItem value="codex">Codex</SelectItem>
+                <SelectItem value="cursor">Cursor</SelectItem>
+                <SelectItem value="gemini-cli">Gemini CLI</SelectItem>
+                <SelectItem value="github-copilot">GitHub Copilot</SelectItem>
                 <SelectItem value="opencode">OpenCode</SelectItem>
+                <SelectItem value="windsurf">Windsurf</SelectItem>
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
+              {deployTarget === "antigravity" && `~/.gemini/antigravity/skills/${skill.slug}/`}
               {deployTarget === "claude-code" && `~/.claude/skills/${skill.slug}/`}
-              {deployTarget === "codex" && `~/.codex/skills/${skill.slug}/`}
-              {deployTarget === "openclaw" && `~/.openclaw/skills/${skill.slug}/`}
+              {deployTarget === "codex" && `~/.agents/skills/${skill.slug}/`}
+              {deployTarget === "cursor" && `~/.cursor/skills/${skill.slug}/`}
+              {deployTarget === "gemini-cli" && `~/.gemini/skills/${skill.slug}/`}
+              {deployTarget === "github-copilot" && `~/.copilot/skills/${skill.slug}/`}
               {deployTarget === "opencode" && `~/.config/opencode/skills/${skill.slug}/`}
+              {deployTarget === "windsurf" && `~/.codeium/windsurf/skills/${skill.slug}/`}
             </p>
           </div>
           <DialogFooter>

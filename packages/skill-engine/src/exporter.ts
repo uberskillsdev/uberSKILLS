@@ -7,10 +7,14 @@ import { generateSkillMd } from "./generator";
 
 /** Skills root directory per deploy target. */
 const SKILLS_ROOTS: Record<DeployTarget, string> = {
+  antigravity: join(homedir(), ".gemini", "antigravity", "skills"),
   "claude-code": join(homedir(), ".claude", "skills"),
-  codex: join(homedir(), ".codex", "skills"),
-  openclaw: join(homedir(), ".openclaw", "skills"),
+  codex: join(homedir(), ".agents", "skills"),
+  cursor: join(homedir(), ".cursor", "skills"),
+  "gemini-cli": join(homedir(), ".gemini", "skills"),
+  "github-copilot": join(homedir(), ".copilot", "skills"),
   opencode: join(homedir(), ".config", "opencode", "skills"),
+  windsurf: join(homedir(), ".codeium", "windsurf", "skills"),
 };
 
 /** Returns the skills root directory for a given deploy target. */
