@@ -1,5 +1,5 @@
-import { access, lstat, mkdtemp, readdir, readFile, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { access, lstat, mkdtemp, readdir, readFile, realpath, rm, stat } from "node:fs/promises";
+import { homedir, tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import type { FileType, SkillFrontmatter, ValidationError } from "@uberskills/types";
 import AdmZip from "adm-zip";
@@ -162,7 +162,8 @@ async function fileExists(filePath: string): Promise<boolean> {
  * Security: rejects symlinks and paths that escape the source directory.
  */
 export async function importFromDirectory(dirPath: string): Promise<ImportResult[]> {
-  const root = resolve(dirPath);
+  const expanded = dirPath.startsWith("~/") ? join(homedir(), dirPath.slice(2)) : dirPath;
+  const root = resolve(expanded);
 
   // If this directory itself contains a SKILL.md, import it directly
   if (await fileExists(join(root, "SKILL.md"))) {
@@ -175,13 +176,24 @@ export async function importFromDirectory(dirPath: string): Promise<ImportResult
 
   const results: ImportResult[] = [];
   for (const entry of entries) {
-    if (!entry.isDirectory()) continue;
-
-    const subdir = join(root, entry.name);
-    if (!(await isSafePath(subdir, root))) continue;
-
-    const subResults = await importFromDirectory(subdir);
-    results.push(...subResults);
+    if (entry.isDirectory()) {
+      // Regular directory — must be within root
+      const subdir = join(root, entry.name);
+      if (!(await isSafePath(subdir, root))) continue;
+      const subResults = await importFromDirectory(subdir);
+      results.push(...subResults);
+    } else if (entry.isSymbolicLink()) {
+      // Symlinked directory — resolve and scan with the target as its own root
+      try {
+        const resolved = await realpath(join(root, entry.name));
+        const info = await stat(resolved);
+        if (!info.isDirectory()) continue;
+        const subResults = await importFromDirectory(resolved);
+        results.push(...subResults);
+      } catch {
+        // Broken symlink or inaccessible target — skip
+      }
+    }
   }
 
   return results;

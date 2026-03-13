@@ -1,5 +1,6 @@
 "use client";
 
+import type { DeployTarget } from "@uberskills/types";
 import {
   Button,
   Card,
@@ -7,7 +8,11 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  Input,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@uberskills/ui";
 import { FolderSearch, Loader2, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -19,24 +24,48 @@ import type { ScanResult, SelectionState } from "@/components/import/import-resu
 import { ImportResultsTable } from "@/components/import/import-results-table";
 import { PageHeader } from "@/components/page-header";
 
+const AGENT_LABELS: Record<DeployTarget, string> = {
+  antigravity: "Antigravity",
+  "claude-code": "Claude Code",
+  codex: "Codex",
+  cursor: "Cursor",
+  "gemini-cli": "Gemini CLI",
+  "github-copilot": "GitHub Copilot",
+  opencode: "OpenCode",
+  windsurf: "Windsurf",
+};
+
+const AGENT_SKILLS_PATHS: Record<DeployTarget, string> = {
+  antigravity: "~/.gemini/antigravity/skills/",
+  "claude-code": "~/.claude/skills/",
+  codex: "~/.agents/skills/",
+  cursor: "~/.cursor/skills/",
+  "gemini-cli": "~/.gemini/skills/",
+  "github-copilot": "~/.copilot/skills/",
+  opencode: "~/.config/opencode/skills/",
+  windsurf: "~/.codeium/windsurf/skills/",
+};
+
 type ImportPhase = "idle" | "scanning" | "results" | "importing";
 
 /**
  * Import page (S6-6).
  *
  * Two import methods: zip upload and directory scan.
- * After scan/upload, shows a results table with validation status and conflict detection.
+ * After scan/upload, shows a results dialog with validation status and conflict detection.
  * Users select skills to import and confirm.
  */
 export default function ImportPage() {
   const router = useRouter();
 
   const [phase, setPhase] = useState<ImportPhase>("idle");
-  const [directoryPath, setDirectoryPath] = useState("~/.claude/skills/");
+  const [selectedAgent, setSelectedAgent] = useState<DeployTarget>("claude-code");
   const [results, setResults] = useState<ScanResult[]>([]);
   const [selections, setSelections] = useState<Map<number, SelectionState>>(new Map());
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const directoryPath = AGENT_SKILLS_PATHS[selectedAgent];
 
   /** Build default selection state from scan results. Valid skills checked, invalid unchecked. */
   const buildSelections = useCallback((scanResults: ScanResult[]) => {
@@ -52,11 +81,6 @@ export default function ImportPage() {
 
   /** Handle directory scan. */
   const handleScanDirectory = useCallback(async () => {
-    if (!directoryPath.trim()) {
-      toast.error("Please enter a directory path");
-      return;
-    }
-
     setPhase("scanning");
     setError(null);
 
@@ -64,7 +88,7 @@ export default function ImportPage() {
       const res = await fetch("/api/import", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "directory", path: directoryPath.trim() }),
+        body: JSON.stringify({ type: "directory", path: directoryPath }),
       });
 
       if (!res.ok) {
@@ -73,11 +97,12 @@ export default function ImportPage() {
       }
 
       const data = (await res.json()) as { skills: ScanResult[] };
-      setResults(data.skills);
-      setSelections(buildSelections(data.skills));
+      const named = data.skills.filter((s) => s.skill.frontmatter.name?.trim());
+      setResults(named);
+      setSelections(buildSelections(named));
       setPhase("results");
 
-      if (data.skills.length === 0) {
+      if (named.length === 0) {
         toast.info("No skills found in the specified directory");
         setPhase("idle");
       }
@@ -116,11 +141,12 @@ export default function ImportPage() {
         }
 
         const data = (await res.json()) as { skills: ScanResult[] };
-        setResults(data.skills);
-        setSelections(buildSelections(data.skills));
+        const named = data.skills.filter((s) => s.skill.frontmatter.name?.trim());
+        setResults(named);
+        setSelections(buildSelections(named));
         setPhase("results");
 
-        if (data.skills.length === 0) {
+        if (named.length === 0) {
           toast.info("No skills found in the zip file");
           setPhase("idle");
         }
@@ -133,6 +159,13 @@ export default function ImportPage() {
     },
     [buildSelections],
   );
+
+  const resetResults = useCallback(() => {
+    setPhase("idle");
+    setResults([]);
+    setSelections(new Map());
+    setError(null);
+  }, []);
 
   /** Confirm import of selected skills. */
   const handleImport = useCallback(async () => {
@@ -173,6 +206,7 @@ export default function ImportPage() {
       const data = (await res.json()) as {
         imported: { id: string; name: string; action: string }[];
       };
+      resetResults();
       toast.success(
         `Imported ${data.imported.length} skill${data.imported.length === 1 ? "" : "s"}`,
       );
@@ -182,7 +216,7 @@ export default function ImportPage() {
       toast.error(message);
       setPhase("results");
     }
-  }, [results, selections, router]);
+  }, [results, selections, router, resetResults]);
 
   let selectedCount = 0;
   for (const [index, sel] of selections) {
@@ -248,22 +282,27 @@ export default function ImportPage() {
               Scan Directory
             </CardTitle>
             <CardDescription>
-              Scan a local directory for skill folders containing SKILL.md files.
+              Select an agent to scan its skills directory for SKILL.md files.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
             <div className="flex gap-2">
-              <Input
-                value={directoryPath}
-                onChange={(e) => setDirectoryPath(e.target.value)}
-                placeholder="~/.claude/skills/"
-                className="font-mono text-sm"
+              <Select
+                value={selectedAgent}
+                onValueChange={(value) => setSelectedAgent(value as DeployTarget)}
                 disabled={isScanning || isImporting}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleScanDirectory();
-                }}
-                aria-label="Directory path to scan"
-              />
+              >
+                <SelectTrigger className="flex-1" aria-label="Select agent to scan">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(AGENT_LABELS) as DeployTarget[]).map((key) => (
+                    <SelectItem key={key} value={key}>
+                      {AGENT_LABELS[key]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Button
                 variant="outline"
                 onClick={handleScanDirectory}
@@ -273,6 +312,7 @@ export default function ImportPage() {
                 Scan
               </Button>
             </div>
+            <p className="text-xs text-muted-foreground font-mono">{directoryPath}</p>
           </CardContent>
         </Card>
       </div>
@@ -296,7 +336,7 @@ export default function ImportPage() {
         </Card>
       )}
 
-      {/* Results */}
+      {/* Inline Results */}
       {phase === "results" && results.length > 0 && (
         <Card>
           <CardHeader>
@@ -312,18 +352,9 @@ export default function ImportPage() {
               selections={selections}
               onSelectionChange={setSelections}
             />
-
-            <div className="flex items-center justify-between">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setPhase("idle");
-                  setResults([]);
-                  setSelections(new Map());
-                  setError(null);
-                }}
-              >
-                Clear Results
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={resetResults}>
+                Cancel
               </Button>
               <Button onClick={handleImport} disabled={selectedCount === 0 || isImporting}>
                 {isImporting ? <Loader2 className="size-4 animate-spin" /> : null}
