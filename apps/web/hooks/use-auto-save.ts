@@ -31,8 +31,8 @@ interface UseAutoSaveOptions {
   current: SkillSnapshot;
   /** The last-persisted state from the server (used to detect material changes). */
   saved: SkillSnapshot;
-  /** Called after a successful save so the parent can refresh server data. */
-  onSaved?: () => void;
+  /** Called after a successful save so the parent can refresh server data. Receives the new slug if it changed. */
+  onSaved?: (newSlug?: string) => void;
 }
 
 interface UseAutoSaveResult {
@@ -60,7 +60,7 @@ function serialise(snapshot: SkillSnapshot): string {
 async function putSkill(
   skillId: string,
   data: SkillSnapshot,
-): Promise<{ ok: boolean; status: number; error?: string }> {
+): Promise<{ ok: boolean; status: number; slug?: string; error?: string }> {
   const res = await fetch(`/api/skills/${skillId}`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -78,7 +78,8 @@ async function putSkill(
     const body = (await res.json().catch(() => ({}))) as { error?: string };
     return { ok: false, status: res.status, error: body.error ?? `Request failed (${res.status})` };
   }
-  return { ok: true, status: res.status };
+  const body = (await res.json().catch(() => ({}))) as { slug?: string };
+  return { ok: true, status: res.status, slug: body.slug };
 }
 
 /**
@@ -135,7 +136,7 @@ export function useAutoSave({
 
     if (result.ok) {
       setStatus("saved");
-      onSavedRef.current?.();
+      onSavedRef.current?.(result.slug);
       // Clear "Saved" indicator after a delay
       if (savedTimer.current) clearTimeout(savedTimer.current);
       savedTimer.current = setTimeout(() => setStatus("idle"), SAVED_DISPLAY_MS);

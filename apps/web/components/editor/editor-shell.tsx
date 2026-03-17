@@ -198,7 +198,15 @@ export function EditorShell({ skill, files }: EditorShellProps) {
     skillId: skill.id,
     current: currentSnapshot,
     saved: savedSnapshot,
-    onSaved: () => router.refresh(),
+    onSaved: (newSlug?: string) => {
+      if (newSlug && newSlug !== skill.slug) {
+        const params = new URLSearchParams(searchParams.toString());
+        const query = params.toString();
+        router.replace(`/skills/${newSlug}${query ? `?${query}` : ""}`);
+      } else {
+        router.refresh();
+      }
+    },
   });
 
   // Run validation on current working state
@@ -264,9 +272,16 @@ export function EditorShell({ skill, files }: EditorShellProps) {
 
     setSavingName(true);
     try {
-      await apiFetch(`/api/skills/${skill.id}`, "PUT", { name: trimmed });
+      const res = await apiFetch(`/api/skills/${skill.id}`, "PUT", { name: trimmed });
+      const data = (await res.json()) as { slug?: string };
       toast.success("Skill renamed");
-      router.refresh();
+      if (data.slug && data.slug !== skill.slug) {
+        const params = new URLSearchParams(searchParams.toString());
+        const query = params.toString();
+        router.replace(`/skills/${data.slug}${query ? `?${query}` : ""}`);
+      } else {
+        router.refresh();
+      }
     } catch (err) {
       toast.error(toErrorMessage(err, "Failed to rename skill"));
       setWorkingName(skill.name);
@@ -274,7 +289,7 @@ export function EditorShell({ skill, files }: EditorShellProps) {
       setSavingName(false);
       setIsEditingName(false);
     }
-  }, [workingName, skill.name, skill.id, router]);
+  }, [workingName, skill.name, skill.slug, skill.id, router, searchParams]);
 
   const handleNameKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLInputElement>) => {

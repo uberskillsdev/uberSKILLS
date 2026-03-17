@@ -52,7 +52,7 @@ export function LandingFooter() {
                   className="hover:text-foreground"
                   data-umami-event="footer-npm-click"
                 >
-                  npm
+                  uberSKILLS on NPM
                 </a>
               </li>
               <li>
