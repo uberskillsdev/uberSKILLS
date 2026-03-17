@@ -104,6 +104,7 @@ export const testRuns = sqliteTable(
     systemPrompt: text("system_prompt").notNull(),
     userMessage: text("user_message").notNull(),
     assistantResponse: text("assistant_response"),
+    messages: text("messages"),
     arguments: text("arguments").notNull().default("{}"),
     promptTokens: integer("prompt_tokens"),
     completionTokens: integer("completion_tokens"),

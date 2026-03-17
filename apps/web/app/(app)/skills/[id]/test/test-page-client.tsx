@@ -1,6 +1,8 @@
 "use client";
 
+import type { TestMessage } from "@uberskills/types";
 import { useCallback, useRef, useState } from "react";
+import { toast } from "sonner";
 
 import type { TestRunStream, TestSkillData } from "@/components/test/test-config-panel";
 import { TestConfigPanel } from "@/components/test/test-config-panel";
@@ -23,11 +25,13 @@ interface TestRunResponse {
   latencyMs: number | null;
   ttftMs: number | null;
   error: string | null;
+  messages: TestMessage[] | null;
 }
 
 export function TestPageClient({ skill, defaultModel, hasApiKey }: TestPageClientProps) {
   const [isRunning, setIsRunning] = useState(false);
-  const [streamedText, setStreamedText] = useState("");
+  const [messages, setMessages] = useState<TestMessage[]>([]);
+  const [currentStreamText, setCurrentStreamText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [metrics, setMetrics] = useState<TestMetricsData | null>(null);
   // Incremented after each test completes to trigger a history table refresh
@@ -57,6 +61,11 @@ export function TestPageClient({ skill, defaultModel, hasApiKey }: TestPageClien
           setError(data.error);
         }
 
+        // Restore full messages from server (includes per-turn metrics)
+        if (data.messages) {
+          setMessages(data.messages);
+        }
+
         setMetrics({
           promptTokens: data.promptTokens,
           completionTokens: data.completionTokens,
@@ -71,22 +80,16 @@ export function TestPageClient({ skill, defaultModel, hasApiKey }: TestPageClien
     }
   }, []);
 
-  const handleTestStart = useCallback(
-    async (stream: TestRunStream) => {
-      setIsRunning(true);
-      setStreamedText("");
-      setError(null);
-      setMetrics(null);
-      testRunIdRef.current = stream.testRunId;
-      readerRef.current = stream.reader;
-
+  /** Read a stream to completion, updating currentStreamText as chunks arrive. */
+  const consumeStream = useCallback(
+    async (reader: ReadableStreamDefaultReader<Uint8Array>, testRunId: string) => {
       const decoder = new TextDecoder();
 
       try {
         while (true) {
-          const { done, value } = await stream.reader.read();
+          const { done, value } = await reader.read();
           if (done) break;
-          setStreamedText((prev) => prev + decoder.decode(value, { stream: true }));
+          setCurrentStreamText((prev) => prev + decoder.decode(value, { stream: true }));
         }
       } catch (err) {
         const message = err instanceof Error ? err.message : "Stream interrupted";
@@ -95,20 +98,103 @@ export function TestPageClient({ skill, defaultModel, hasApiKey }: TestPageClien
         setIsRunning(false);
         readerRef.current = null;
 
-        if (testRunIdRef.current) {
-          await fetchMetrics(testRunIdRef.current);
-        }
+        await fetchMetrics(testRunId);
 
-        // Trigger history table refresh after metrics are fetched
+        // Clear streaming text — the full content is now in the messages array
+        setCurrentStreamText("");
+
+        // Trigger history table refresh
         setHistoryRefreshKey((k) => k + 1);
       }
     },
     [fetchMetrics],
   );
 
+  const handleTestStart = useCallback(
+    async (stream: TestRunStream) => {
+      setIsRunning(true);
+      setMessages([]);
+      setCurrentStreamText("");
+      setError(null);
+      setMetrics(null);
+      testRunIdRef.current = stream.testRunId;
+      readerRef.current = stream.reader;
+
+      await consumeStream(stream.reader, stream.testRunId);
+    },
+    [consumeStream],
+  );
+
+  /** Send a follow-up message in the current conversation. */
+  const handleContinue = useCallback(
+    async (userMessage: string) => {
+      const testRunId = testRunIdRef.current;
+      if (!testRunId || isRunning) return;
+
+      setIsRunning(true);
+      setCurrentStreamText("");
+      setError(null);
+
+      // Optimistically add the user message to the conversation
+      const userMsg: TestMessage = {
+        role: "user",
+        content: userMessage,
+        timestamp: Date.now(),
+      };
+      setMessages((prev) => [...prev, userMsg]);
+
+      try {
+        const res = await fetch(`/api/test/${testRunId}/continue`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userMessage }),
+        });
+
+        if (!res.ok) {
+          const data = (await res.json()) as { error?: string };
+          const errMsg = data.error ?? `Continue failed (${res.status})`;
+          setError(errMsg);
+          setIsRunning(false);
+          toast.error(errMsg);
+          return;
+        }
+
+        const reader = res.body?.getReader();
+        if (!reader) {
+          setError("No response stream available");
+          setIsRunning(false);
+          toast.error("No response stream available");
+          return;
+        }
+
+        readerRef.current = reader;
+        await consumeStream(reader, testRunId);
+      } catch {
+        setError("Failed to send follow-up. Check your network connection.");
+        setIsRunning(false);
+        toast.error("Failed to send follow-up.");
+      }
+    },
+    [isRunning, consumeStream],
+  );
+
   // Load a historical test run's response into the response panel
   const handleSelectHistoryRun = useCallback((selection: HistorySelection) => {
-    setStreamedText(selection.text);
+    testRunIdRef.current = selection.testRunId;
+    if (selection.messages) {
+      setMessages(selection.messages);
+    } else {
+      // Legacy single-turn run: reconstruct a 2-element array
+      setMessages(
+        selection.text
+          ? [
+              { role: "user", content: "", timestamp: 0 },
+              { role: "assistant", content: selection.text, timestamp: 0 },
+            ]
+          : [],
+      );
+    }
+    setCurrentStreamText("");
     setError(selection.error);
     setMetrics(selection.metrics);
   }, []);
@@ -129,10 +215,12 @@ export function TestPageClient({ skill, defaultModel, hasApiKey }: TestPageClien
 
         <div className="flex w-1/2 flex-col overflow-hidden p-5">
           <TestResponsePanel
-            streamedText={streamedText}
+            messages={messages}
+            currentStreamText={currentStreamText}
             isRunning={isRunning}
             error={error}
             metrics={metrics}
+            onContinue={handleContinue}
           />
         </div>
       </div>

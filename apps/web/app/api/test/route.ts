@@ -142,7 +142,10 @@ export async function POST(request: Request): Promise<Response> {
 
   try {
     const result = streamText({
-      model: openrouter(model, enableWebSearch ? { web_search_options: { max_results: 5 } } : undefined),
+      model: openrouter(
+        model,
+        enableWebSearch ? { web_search_options: { max_results: 5 } } : undefined,
+      ),
       system: systemPrompt,
       messages: [{ role: "user", content: userMessage }],
       // Capture time-to-first-token on the first chunk
@@ -155,6 +158,20 @@ export async function POST(request: Request): Promise<Response> {
       async onFinish({ text, usage }) {
         const latencyMs = Date.now() - startMs;
 
+        const messages = JSON.stringify([
+          { role: "user", content: userMessage, timestamp: startMs },
+          {
+            role: "assistant",
+            content: text,
+            timestamp: Date.now(),
+            promptTokens: usage.inputTokens ?? null,
+            completionTokens: usage.outputTokens ?? null,
+            totalTokens: usage.totalTokens ?? null,
+            latencyMs,
+            ttftMs,
+          },
+        ]);
+
         updateTestRun(testRun.id, {
           assistantResponse: text,
           promptTokens: usage.inputTokens ?? null,
@@ -163,6 +180,7 @@ export async function POST(request: Request): Promise<Response> {
           latencyMs,
           ttftMs,
           status: "completed",
+          messages,
         });
 
         rlog.info({ latencyMs, tokens: usage.totalTokens ?? 0, ttftMs }, "test run completed");

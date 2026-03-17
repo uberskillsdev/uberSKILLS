@@ -1,5 +1,6 @@
 "use client";
 
+import type { TestMessage } from "@uberskills/types";
 import {
   Button,
   Skeleton,
@@ -10,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@uberskills/ui";
-import { Check, History, X } from "lucide-react";
+import { Check, History, MessageSquare, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import type { TestMetricsData } from "./test-metrics";
@@ -28,14 +29,18 @@ export interface TestRunRow {
   promptTokens: number | null;
   completionTokens: number | null;
   ttftMs: number | null;
+  turnCount: number;
+  messages: TestMessage[] | null;
   createdAt: string;
 }
 
 /** Data emitted when a history row is selected. */
 export interface HistorySelection {
+  testRunId: string;
   text: string;
   error: string | null;
   metrics: TestMetricsData;
+  messages: TestMessage[] | null;
 }
 
 interface TestHistoryProps {
@@ -103,6 +108,7 @@ export function TestHistory({ skillId, refreshKey, onSelectRun }: TestHistoryPro
   const handleRowClick = useCallback(
     (run: TestRunRow) => {
       onSelectRun({
+        testRunId: run.id,
         text: run.assistantResponse ?? "",
         error: run.status === "error" ? run.error : null,
         metrics: {
@@ -112,6 +118,7 @@ export function TestHistory({ skillId, refreshKey, onSelectRun }: TestHistoryPro
           latencyMs: run.latencyMs,
           ttftMs: run.ttftMs,
         },
+        messages: run.messages,
       });
     },
     [onSelectRun],
@@ -127,6 +134,7 @@ export function TestHistory({ skillId, refreshKey, onSelectRun }: TestHistoryPro
               <TableRow className="bg-muted/50 hover:bg-muted/50">
                 <TableHead className="w-12">#</TableHead>
                 <TableHead>Model</TableHead>
+                <TableHead className="w-16 text-center">Turns</TableHead>
                 <TableHead className="w-24 text-right">Tokens</TableHead>
                 <TableHead className="w-24 text-right">Latency</TableHead>
                 <TableHead className="w-16 text-center">Status</TableHead>
@@ -142,6 +150,9 @@ export function TestHistory({ skillId, refreshKey, onSelectRun }: TestHistoryPro
                   </TableCell>
                   <TableCell>
                     <Skeleton className="h-4 w-32" />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <Skeleton className="mx-auto h-4 w-6" />
                   </TableCell>
                   <TableCell className="text-right">
                     <Skeleton className="ml-auto h-4 w-12" />
@@ -208,6 +219,16 @@ export function TestHistory({ skillId, refreshKey, onSelectRun }: TestHistoryPro
               >
                 <TableCell className="font-medium tabular-nums">{run.runNumber}</TableCell>
                 <TableCell className="max-w-[200px] truncate text-xs">{run.model}</TableCell>
+                <TableCell className="text-center tabular-nums">
+                  {run.turnCount > 1 ? (
+                    <span className="inline-flex items-center gap-1 text-xs">
+                      <MessageSquare className="size-3" />
+                      {run.turnCount}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-muted-foreground">1</span>
+                  )}
+                </TableCell>
                 <TableCell className="text-right tabular-nums">
                   {formatTokenCount(run.totalTokens)}
                 </TableCell>

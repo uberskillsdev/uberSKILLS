@@ -15,6 +15,8 @@ export interface CreateTestRunInput {
   userMessage: string;
   /** JSON-serialized substitution arguments (default: "{}"). */
   arguments?: string;
+  /** JSON-serialized conversation messages array. */
+  messages?: string;
   status?: TestRunStatus;
 }
 
@@ -28,6 +30,8 @@ export interface UpdateTestRunInput {
   ttftMs?: number | null;
   status?: TestRunStatus;
   error?: string | null;
+  /** JSON-serialized conversation messages array. */
+  messages?: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -70,6 +74,7 @@ export function createTestRun(input: CreateTestRunInput): typeof testRuns.$infer
       systemPrompt: input.systemPrompt,
       userMessage: input.userMessage,
       arguments: input.arguments ?? "{}",
+      messages: input.messages ?? null,
       status: input.status ?? "running",
       createdAt: new Date(),
     })
@@ -101,6 +106,7 @@ export function updateTestRun(
   if (input.ttftMs !== undefined) updates.ttftMs = input.ttftMs;
   if (input.status !== undefined) updates.status = input.status;
   if (input.error !== undefined) updates.error = input.error;
+  if (input.messages !== undefined) updates.messages = input.messages;
 
   if (Object.keys(updates).length === 0) {
     return getTestRun(id);

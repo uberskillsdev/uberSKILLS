@@ -11,4 +11,4 @@ export type {
   SkillStatus,
   SkillVersion,
 } from "./skill";
-export type { TestRun, TestRunStatus } from "./test-run";
+export type { TestMessage, TestRun, TestRunStatus } from "./test-run";

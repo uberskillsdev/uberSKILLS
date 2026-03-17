@@ -1,6 +1,18 @@
 /** Status of a test run execution. */
 export type TestRunStatus = "running" | "completed" | "error";
 
+/** A single message in a multi-turn test conversation. */
+export interface TestMessage {
+  role: "user" | "assistant";
+  content: string;
+  timestamp: number;
+  promptTokens?: number | null;
+  completionTokens?: number | null;
+  totalTokens?: number | null;
+  latencyMs?: number | null;
+  ttftMs?: number | null;
+}
+
 /** A single test execution of a skill against an AI model. */
 export interface TestRun {
   id: string;
@@ -23,5 +35,7 @@ export interface TestRun {
   status: TestRunStatus;
   /** Error message when status is "error". */
   error: string | null;
+  /** Full multi-turn conversation history; null for legacy single-turn runs. */
+  messages: TestMessage[] | null;
   createdAt: Date;
 }

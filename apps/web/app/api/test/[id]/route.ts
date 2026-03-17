@@ -35,6 +35,7 @@ export async function GET(_request: Request, context: RouteContext): Promise<Nex
       latencyMs: testRun.latencyMs,
       ttftMs: testRun.ttftMs,
       error: testRun.error,
+      messages: testRun.messages ? JSON.parse(testRun.messages) : null,
       createdAt: testRun.createdAt,
     });
   } catch (err) {

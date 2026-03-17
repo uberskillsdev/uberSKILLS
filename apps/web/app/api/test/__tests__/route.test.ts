@@ -89,6 +89,7 @@ const fakeTestRun = {
   ttftMs: null,
   status: "running" as const,
   error: null,
+  messages: null,
   createdAt: new Date(),
 };
 
@@ -364,6 +365,7 @@ describe("POST /api/test", () => {
       latencyMs: expect.any(Number),
       ttftMs: null,
       status: "completed",
+      messages: expect.any(String),
     });
   });
 

@@ -121,7 +121,16 @@ export function TestConfigPanel({
     } finally {
       setIsSubmitting(false);
     }
-  }, [canRun, skill.id, selectedModel, userMessage, argValues, placeholders.length, enableWebSearch, onTestStart]);
+  }, [
+    canRun,
+    skill.id,
+    selectedModel,
+    userMessage,
+    argValues,
+    placeholders.length,
+    enableWebSearch,
+    onTestStart,
+  ]);
 
   // Early return: prompt the user to configure an API key before testing
   if (!hasApiKey) {

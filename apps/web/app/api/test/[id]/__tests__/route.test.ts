@@ -34,6 +34,7 @@ const fakeTestRun = {
   ttftMs: 200,
   status: "completed" as const,
   error: null,
+  messages: null,
   createdAt: MOCK_DATE,
 };
 

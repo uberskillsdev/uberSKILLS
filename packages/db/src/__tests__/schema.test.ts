@@ -133,6 +133,7 @@ describe("schema", () => {
         "system_prompt",
         "user_message",
         "assistant_response",
+        "messages",
         "arguments",
         "prompt_tokens",
         "completion_tokens",

@@ -22,20 +22,26 @@ export async function GET(_request: Request, context: RouteContext): Promise<Nex
     const runs = listTestRuns(id);
 
     // Return only the fields needed by the history table to keep the payload small.
-    const testRuns = runs.map((run, index) => ({
-      id: run.id,
-      runNumber: runs.length - index,
-      model: run.model,
-      status: run.status,
-      totalTokens: run.totalTokens,
-      latencyMs: run.latencyMs,
-      error: run.error,
-      assistantResponse: run.assistantResponse,
-      promptTokens: run.promptTokens,
-      completionTokens: run.completionTokens,
-      ttftMs: run.ttftMs,
-      createdAt: run.createdAt,
-    }));
+    const testRuns = runs.map((run, index) => {
+      const parsedMessages = run.messages ? JSON.parse(run.messages) : null;
+      const turnCount = parsedMessages ? Math.ceil(parsedMessages.length / 2) : 1;
+      return {
+        id: run.id,
+        runNumber: runs.length - index,
+        model: run.model,
+        status: run.status,
+        totalTokens: run.totalTokens,
+        latencyMs: run.latencyMs,
+        error: run.error,
+        assistantResponse: run.assistantResponse,
+        promptTokens: run.promptTokens,
+        completionTokens: run.completionTokens,
+        ttftMs: run.ttftMs,
+        turnCount,
+        messages: parsedMessages,
+        createdAt: run.createdAt,
+      };
+    });
 
     rlog.info({ count: testRuns.length }, "test runs listed");
     return NextResponse.json({ testRuns });
