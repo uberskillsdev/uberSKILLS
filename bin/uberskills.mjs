@@ -180,7 +180,7 @@ async function ensureInstalled(reset) {
   }
 
   await step("Cloning repository...", "Repository cloned", () =>
-    runQuiet(`git clone --depth 1 --branch v${VERSION} ${REPO_URL} ${APP_DIR}`),
+    runQuiet(`git clone --depth 1 --branch v${VERSION} ${REPO_URL} "${APP_DIR}"`),
   );
 
   await step("Enabling pnpm via corepack...", "Corepack enabled", async () => {
@@ -244,7 +244,7 @@ function printBanner(port, host, dataDir) {
 }
 
 // Launches the actual server as a child process after setup.
-// Binds stdio, propagates SIGINT/SIGTERM, sets environment (including database location and encryption).
+// Binds stdio, propagates SIGINT/SIGTERM (SIGTERM on Unix only), sets environment (including database location and encryption).
 function startServer(port, host, dataDir, encryptionSecret, debug) {
   const standaloneDir = join(APP_DIR, "apps", "web", ".next", "standalone");
   const serverScript = join("apps", "web", "server.js");
@@ -275,7 +275,7 @@ function startServer(port, host, dataDir, encryptionSecret, debug) {
     process.exit(code ?? 0);
   });
 
-  // Gracefully handle Ctrl+C (SIGINT) and termination (SIGTERM)
+  // Gracefully handle Ctrl+C (SIGINT) and termination (SIGTERM on Unix only — unsupported on Windows)
   const shutdown = () => {
     child.kill("SIGTERM");
   };
