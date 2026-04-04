@@ -214,23 +214,23 @@ describe("validateSkill", () => {
 
   // --- trigger validation ---
 
-  it("fails when trigger is missing", () => {
+  it("warns when trigger is missing", () => {
     const fm: SkillFrontmatter = { ...validFrontmatter, trigger: "" };
     const result = validateSkill(fm, validContent);
 
-    expect(result.valid).toBe(false);
+    expect(result.valid).toBe(true);
     expect(result.errors).toContainEqual(
-      expect.objectContaining({ field: "trigger", severity: "error" }),
+      expect.objectContaining({ field: "trigger", severity: "warning" }),
     );
   });
 
-  it("fails when trigger is whitespace only", () => {
+  it("warns when trigger is whitespace only", () => {
     const fm: SkillFrontmatter = { ...validFrontmatter, trigger: "  \n  " };
     const result = validateSkill(fm, validContent);
 
-    expect(result.valid).toBe(false);
+    expect(result.valid).toBe(true);
     expect(result.errors).toContainEqual(
-      expect.objectContaining({ field: "trigger", severity: "error" }),
+      expect.objectContaining({ field: "trigger", severity: "warning" }),
     );
   });
 
@@ -307,7 +307,7 @@ describe("validateSkill", () => {
     const result = validateSkill(fm, "");
 
     expect(result.valid).toBe(false);
-    // name(error), description(warning), trigger(error), model_pattern(error), content(error)
+    // name(error), description(warning), trigger(warning), model_pattern(error), content(error)
     expect(result.errors.length).toBeGreaterThanOrEqual(5);
   });
 
@@ -315,11 +315,13 @@ describe("validateSkill", () => {
     const fm: SkillFrontmatter = {
       name: "",
       description: "Has a description. Use when testing.",
-      trigger: "",
+      trigger: "When the user asks to test",
     };
     const result = validateSkill(fm, "");
 
-    for (const err of result.errors) {
+    const errorEntries = result.errors.filter((e) => e.severity === "error");
+    expect(errorEntries.length).toBeGreaterThan(0);
+    for (const err of errorEntries) {
       expect(err.severity).toBe("error");
     }
   });
