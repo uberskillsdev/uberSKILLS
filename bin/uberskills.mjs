@@ -189,7 +189,9 @@ async function ensureInstalled(reset) {
   });
 
   await step("Installing dependencies...", "Dependencies installed", () =>
-    runQuiet(`pnpm install --frozen-lockfile${isWindows ? " --shamefully-hoist" : ""}`, { cwd: APP_DIR }),
+    runQuiet(`pnpm install --frozen-lockfile${isWindows ? " --shamefully-hoist" : ""}`, {
+      cwd: APP_DIR,
+    }),
   );
 
   await step("Building application...", "Application built", () =>
